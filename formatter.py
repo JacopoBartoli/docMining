@@ -63,11 +63,11 @@ def save_classes(classes, path):
 
 def icdar_to_darknet():
     # Path of input annotations.
-    in_annotations_dir = "./Dataset/ICDAR_2017_POD_competition/Annotations"
+    in_annotations_dir = "./Dataset/icdar_2017/Annotations"
     # Output path for the new annotations.
     out_annotations_dir = "./Dataset/ICDAR_Darknet_format/labels"
     # Path of input images.
-    in_image_dir = "./Dataset/ICDAR_2017_POD_competition/Images"
+    in_image_dir = "./Dataset/icdar_2017/Images"
     # Output path for the new images.
     out_image_dir = "./Dataset/ICDAR_Darknet_format/images"
 
