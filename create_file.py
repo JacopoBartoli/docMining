@@ -1,6 +1,6 @@
 # !!! Need to change this file.
 def run():
-    out = open('./icdar_train.txt', "w+")
+    out = open('./Dataset/icdar_train.txt', "w+")
     for i in range(0, 159):
         if i >= 100:
             out.write('./ICDAR_Darknet_format/images/POD_0'+str(i)+'.jpg'+'\n')
