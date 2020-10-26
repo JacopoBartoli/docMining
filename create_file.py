@@ -1,4 +1,4 @@
-
+# !!! Need to change this file.
 def run():
     out = open('./icdar_train.txt', "w+")
     for i in range(0, 159):
