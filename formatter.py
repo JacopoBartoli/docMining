@@ -1,6 +1,7 @@
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as et
 import os
 from rectangle import Rectangle
+from filesplitter import FileSplitter
 from PIL import Image
 
 
@@ -47,7 +48,7 @@ def get_classes(dir_path):
     class_dict = {}
     index = 0
     for filename in os.listdir(dir_path):
-        tree = ET.parse(dir_path + '/' + filename)
+        tree = et.parse(dir_path + '/' + filename)
         root = tree.getroot()
         for child in root:
             class_dict[child.tag] = index
@@ -65,11 +66,11 @@ def icdar_to_darknet():
     # Path of input annotations.
     in_annotations_dir = "./Dataset/icdar_2017/Annotations"
     # Output path for the new annotations.
-    out_annotations_dir = "./Dataset/ICDAR_Darknet_format/labels"
+    out_annotations_dir = "./Dataset/icdar/labels"
     # Path of input images.
     in_image_dir = "./Dataset/icdar_2017/Images"
     # Output path for the new images.
-    out_image_dir = "./Dataset/ICDAR_Darknet_format/images"
+    out_image_dir = "./Dataset/icdar/images"
 
     # Get the dictionary with all the classes
     classes_dir = "./Dataset/icdar.names"
@@ -77,12 +78,13 @@ def icdar_to_darknet():
     save_classes(class_dict, classes_dir)
 
     for filename in os.listdir(in_annotations_dir):
-        tree = ET.parse(in_annotations_dir + '/' + filename)
+        tree = et.parse(in_annotations_dir + '/' + filename)
         root = tree.getroot()
         # Storing the corresponding image to the file.
         img_filename = in_image_dir+'/' + filename.replace('.xml', '.bmp')
         img = Image.open(img_filename)
-        out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
+        if len(root.items()) != 0:
+            out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
         for child in root:
             for item in child:
                 if item.tag == 'Coords':
@@ -102,3 +104,5 @@ def icdar_to_darknet():
 
 if __name__ == '__main__':
     icdar_to_darknet()
+    fs = FileSplitter(1600)
+    fs.split(20)
