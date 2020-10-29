@@ -101,8 +101,21 @@ def icdar_to_darknet():
         img.save(out_image_dir + '/' + filename.replace('.xml', '.jpg'))
         out_annotation.close()
 
+def convert_train():
+    # Path of the folder which contains test images.
+    in_test_dir = "./Dataset/icdar_2017/other"
+    # Path of the folder which will contains test images.
+    out_test_dir = "./Dataset/icdar/test"
+
+    for filename in os.listdir(in_test_dir):
+        img_filename = in_test_dir + '/' + filename
+        img = Image.open(img_filename)
+        img.save(out_test_dir + '/' + filename.replace('.bmp', '.jpg'))
+
+
 
 if __name__ == '__main__':
     icdar_to_darknet()
     fs = FileSplitter(1600)
     fs.split(20)
+    convert_train()
