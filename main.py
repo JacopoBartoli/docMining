@@ -1,4 +1,4 @@
-from formatter import icdar_to_darknet
+from utils import icdar_to_darknet
 
 
 if __name__=='__main__':

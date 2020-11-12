@@ -9,8 +9,8 @@ class FileSplitter:
         self.valid_set = []
         self.dataset_size = dataset_size
 
-    def split(self, train_percentage=20):
-        train_size = self.dataset_size/train_percentage
+    def split(self, train_percentage=80):
+        train_size = int((self.dataset_size*train_percentage)/100)
         valid_size = self.dataset_size-train_size
         self.train_set = np.random.random_integers(0, 1599, size=int(train_size))
         for i in range(0, self.dataset_size):

@@ -3,9 +3,13 @@ import os
 from rectangle import Rectangle
 from filesplitter import FileSplitter
 from PIL import Image
+import cv2
+import image_transformer
 
 
 def create_rectangle(points, img_width=1, img_height=1):
+    # Create a bounding box in darknet format.
+
     # Points[0][0] refer to the x coord of the upper left angle.
     # Points[1][0] refer to the x coord of the upper right angle.
     # Points[2][0] refer to the x coord of the bottom left angle.
@@ -45,17 +49,21 @@ def calc_box(coord, img_width=1, img_height=1):
 
 
 def get_classes(dir_path):
+    # Get the list of all the classes of the ICDAR dataset.
     class_dict = {}
     index = 0
     for filename in os.listdir(dir_path):
         tree = et.parse(dir_path + '/' + filename)
         root = tree.getroot()
         for child in root:
-            class_dict[child.tag] = index
+            if child.tag not in class_dict:
+                class_dict[child.tag] = index
+                index = index + 1
     return class_dict
 
 
 def save_classes(classes, path):
+    # Store all the classes in a file
     file = open(path, 'w+')
     for key in classes.keys():
         file.write(str(key) + '\n')
@@ -75,6 +83,7 @@ def icdar_to_darknet():
     # Get the dictionary with all the classes
     classes_dir = "./Dataset/icdar.names"
     class_dict = get_classes(in_annotations_dir)
+    print(class_dict)
     save_classes(class_dict, classes_dir)
 
     for filename in os.listdir(in_annotations_dir):
@@ -101,7 +110,10 @@ def icdar_to_darknet():
         img.save(out_image_dir + '/' + filename.replace('.xml', '.jpg'))
         out_annotation.close()
 
+
 def convert_train():
+    # Convert unlabeled images in Darknet format.
+
     # Path of the folder which contains test images.
     in_test_dir = "./Dataset/icdar_2017/other"
     # Path of the folder which will contains test images.
@@ -113,9 +125,19 @@ def convert_train():
         img.save(out_test_dir + '/' + filename.replace('.bmp', '.jpg'))
 
 
+def transform_training_set():
+    # Transform the image in the black and white one.
+    # Path of the train set directory.
+    train_dir = "./Dataset/icdar/images"
+    for filename in os.listdir(train_dir):
+        img_filename = train_dir + '/' + filename
+        image = cv2.imread('./Dataset/icdar/images/POD_0067.jpg')
+        trsf = image_transformer.image_trasformation(image)
+        cv2.imwrite(train_dir + '/' + filename.replace('.bmp', '.jpg'), trsf)
+
 
 if __name__ == '__main__':
     icdar_to_darknet()
     fs = FileSplitter(1600)
-    fs.split(20)
+    fs.split()
     convert_train()

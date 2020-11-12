@@ -27,9 +27,10 @@ def image_transformation(img):
     ret, transformed = cv2.threshold(transformed, 15, 255, cv2.THRESH_BINARY)
 
     # Adaptive threshold seems to not be the right answer at this threshold problem.
-    #transformed = cv2.adaptiveThreshold(transformed, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 3, 0)
+    # transformed = cv2.adaptiveThreshold(transformed, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 3, 0)
 
     return transformed
+
 
 if __name__ == '__main__':
     image = cv2.imread('./Dataset/icdar/images/POD_0067.jpg')
