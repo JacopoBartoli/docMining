@@ -23,13 +23,13 @@ class FileSplitter:
         out = open('./Dataset/icdar_train.txt', "w+")
         for i in self.train_set:
             if i >= 1000:
-                out.write('../icdar/images/train/POD_' + str(i) + '.jpg' + '\n')
+                out.write('../icdar/images/POD_' + str(i) + '.jpg' + '\n')
             elif i >= 100:
-                out.write('../icdar/images/train/POD_0' + str(i) + '.jpg' + '\n')
+                out.write('../icdar/images/POD_0' + str(i) + '.jpg' + '\n')
             elif i >= 10:
-                out.write('../icdar/images/train/POD_00' + str(i) + '.jpg' + '\n')
+                out.write('../icdar/images/POD_00' + str(i) + '.jpg' + '\n')
             elif i < 10:
-                out.write('../icdar/images/train/POD_000' + str(i) + 'jpg' + '\n')
+                out.write('../icdar/images/POD_000' + str(i) + 'jpg' + '\n')
         out.close()
         return self.train_set
 
@@ -37,13 +37,13 @@ class FileSplitter:
         out = open('./Dataset/icdar_valid.txt', "w+")
         for i in self.valid_set:
             if i >= 1000:
-                out.write('../icdar/images/train/POD_' + str(i) + '.jpg' + '\n')
+                out.write('../icdar/images/POD_' + str(i) + '.jpg' + '\n')
             elif i >= 100:
-                out.write('../icdar/images/train/POD_0' + str(i) + '.jpg' + '\n')
+                out.write('../icdar/images/POD_0' + str(i) + '.jpg' + '\n')
             elif i >= 10:
-                out.write('../icdar/images/train/POD_00' + str(i) + '.jpg' + '\n')
+                out.write('../icdar/images/POD_00' + str(i) + '.jpg' + '\n')
             elif i < 10:
-                out.write('../icdar/images/train/POD_000' + str(i) + 'jpg' + '\n')
+                out.write('../icdar/images/POD_000' + str(i) + 'jpg' + '\n')
         out.close()
         return self.valid_set
 
