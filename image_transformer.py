@@ -33,5 +33,4 @@ def image_transformation(img):
 
 
 if __name__ == '__main__':
-    image = cv2.imread('./Dataset/icdar/images/POD_0067.jpg')
-    trs = image_transformation(image)
+    print("void")

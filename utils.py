@@ -111,7 +111,7 @@ def icdar_to_darknet():
         out_annotation.close()
 
 
-def convert_train():
+def convert_test():
     # Convert unlabeled images in Darknet format.
 
     # Path of the folder which contains test images.
@@ -126,18 +126,37 @@ def convert_train():
 
 
 def transform_training_set():
-    # Transform the image in the black and white one.
+    # Transform the train images in the black and white one.
     # Path of the train set directory.
-    train_dir = "./Dataset/icdar/images"
-    for filename in os.listdir(train_dir):
-        img_filename = train_dir + '/' + filename
-        image = cv2.imread('./Dataset/icdar/images/POD_0067.jpg')
-        trsf = image_transformer.image_trasformation(image)
-        cv2.imwrite(train_dir + '/' + filename.replace('.bmp', '.jpg'), trsf)
+    input_dir = "./Dataset/icdar/images"
+    # Path of the output directory.
+    output_dir = "./Dataset/icdar_transformed/images"
+
+    for filename in os.listdir(input_dir):
+        img_filename = input_dir + '/' + filename
+        image = cv2.imread(img_filename)
+        trs = image_transformer.image_transformation(image)
+        cv2.imwrite(output_dir + '/' + filename, trs)
+
+
+def transform_test_set():
+    # Transform the test images in the black and white one.
+    # Path of the train set directory.
+    input_dir = "./Dataset/icdar/test"
+    # Path of the output directory.
+    output_dir = "./Dataset/icdar_transformed/test"
+
+    for filename in os.listdir(input_dir):
+        img_filename = input_dir + '/' + filename
+        image = cv2.imread(img_filename)
+        trs = image_transformer.image_transformation(image)
+        cv2.imwrite(output_dir + '/' + filename, trs)
 
 
 if __name__ == '__main__':
     icdar_to_darknet()
     fs = FileSplitter(1600)
     fs.split()
-    convert_train()
+    convert_test()
+    transform_training_set()
+    transform_test_set()
