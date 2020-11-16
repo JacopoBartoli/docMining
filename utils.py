@@ -5,6 +5,8 @@ from filesplitter import FileSplitter
 from PIL import Image
 import cv2
 import image_transformer
+import numpy as np
+import struct
 
 
 def create_rectangle(points, img_width=1, img_height=1):
@@ -20,7 +22,49 @@ def create_rectangle(points, img_width=1, img_height=1):
     x_center = (points[1][0] - points[0][0]) / 2.0
     y_center = (points[2][1] - points[0][1]) / 2.0
 
-    return Rectangle(width/img_width, height/img_height, x_center/img_width, y_center/img_height)
+    return Rectangle(width / img_width, height / img_height, x_center / img_width, y_center / img_height)
+
+
+def create_rectangle_marmot(points, img_width=1, img_height=1):
+    # Points[0][0] refer to the x coord of the upper left angle.
+    # Points[1][0] refer to the x coord of the upper right angle.
+    # Points[2][0] refer to the x coord of the bottom left angle.
+    # Points[3][0] refer to the x coord of the bottom right angle.
+    width = points[1, 0] - points[0, 0]
+    height = points[2, 1] - points[0, 1]
+    x_center = (points[1, 0] - points[0, 0]) / 2.0
+    y_center = (points[2, 1] - points[0, 1]) / 2.0
+    return Rectangle(width / img_width, height / img_height, x_center / img_width, y_center / img_height)
+
+
+# convert hexadecimal to decimal
+def convertToDecimal(coord, img_height):
+    i = 0
+    x1 = ''
+    y1 = ''
+    x2 = ''
+    y2 = ''
+    for char in coord:
+        if i >= 10 and i <= 25:
+            x1 = x1 + char
+        if i >= 27 and i <= 42:
+            y1 = y1 + char
+        if i >= 44 and i <= 59:
+            x2 = x2 + char
+        if i >= 61 and i <= 76:
+            y2 = y2 + char
+        i = i + 1
+    BBox = [x1, y1, x2, y2]
+    conv_pound = [struct.unpack('!d', bytes.fromhex(t))[0] for t in BBox]
+    i = 0
+    for c in conv_pound:
+        if i % 2 == 0:
+            c = (c * 96 / 72)
+        else:
+            c = img_height - (c * 96 / 72)
+        conv_pound[i] = c
+        i = i + 1
+    return conv_pound
 
 
 # Parse the string received from the xml file, and create a rectangle.
@@ -28,7 +72,7 @@ def create_rectangle(points, img_width=1, img_height=1):
 def calc_box(coord, img_width=1, img_height=1):
     # The key for this dictionary is 'points'.
     key = 'points'
-    coord_dict=coord.attrib
+    coord_dict = coord.attrib
 
     # Iterate over the string to collect the data.
     points = []
@@ -48,6 +92,23 @@ def calc_box(coord, img_width=1, img_height=1):
     return create_rectangle(points, img_width, img_height)
 
 
+def calc_box_marmot(img, boxConverted, img_width=1, img_height=1):
+    # The key for this dictionary is 'points'.
+
+    # Iterate over the string to collect the data.
+    points = np.zeros((4, 2))
+    points[0, 0] = boxConverted[0]
+    points[0, 1] = boxConverted[1]
+    points[3, 0] = boxConverted[2]
+    points[3, 1] = boxConverted[3]
+    points[1, 0] = points[3, 0]
+    points[1, 1] = points[0, 1]
+    points[2, 0] = points[0, 0]
+    points[2, 1] = points[3, 1]
+    return create_rectangle(points, img_width, img_height)
+
+
+# OBSOLETE, there is only a binary representation.
 def get_classes(dir_path):
     # Get the list of all the classes of the ICDAR dataset.
     class_dict = {}
@@ -62,6 +123,7 @@ def get_classes(dir_path):
     return class_dict
 
 
+# OBSOLETE, now there is only a binary representation
 def save_classes(classes, path):
     # Store all the classes in a file
     file = open(path, 'w+')
@@ -70,7 +132,11 @@ def save_classes(classes, path):
     file.close()
 
 
+# # Convert the ICDAR 2017 POD dataset into the darknet format.
+# OBSOLETE representation, the not binary one.
 def icdar_to_darknet():
+    # Pass the path as parameter here too?
+
     # Path of input annotations.
     in_annotations_dir = "./Dataset/icdar_2017/Annotations"
     # Output path for the new annotations.
@@ -90,14 +156,14 @@ def icdar_to_darknet():
         tree = et.parse(in_annotations_dir + '/' + filename)
         root = tree.getroot()
         # Storing the corresponding image to the file.
-        img_filename = in_image_dir+'/' + filename.replace('.xml', '.bmp')
+        img_filename = in_image_dir + '/' + filename.replace('.xml', '.bmp')
         img = Image.open(img_filename)
         if len(root.items()) != 0:
             out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
         for child in root:
             for item in child:
                 if item.tag == 'Coords':
-                    img_width,  img_height = img.size
+                    img_width, img_height = img.size
                     normalized_box = calc_box(item, img_width, img_height)
                     # Create new annotation files and save them in the right directory, and in the right format(.txt).
                     out_annotation.write(str(class_dict[child.tag]) + ' ')
@@ -111,26 +177,98 @@ def icdar_to_darknet():
         out_annotation.close()
 
 
-def convert_test():
+def marmot_to_darknet():
+    # Path of input annotations.
+    in_annotations_dir = "./Dataset/marmot_old/data/English/N+P/Labeled"
+    # Output path for the new annotations.
+    out_annotations_dir = "./Dataset/marmot_new/labels"
+    # Path of input images.
+    in_image_dir = "./Dataset/marmot_old/data/English/N+P/Raw"
+    # Output path for the new images.
+    out_image_dir = "./Dataset/marmot_new/images"
+
+    # Get the dictionary with all the classes
+    classes_dir = "./Dataset/marmot.names"
+    # Creare marmot .names
+
+    for filename in os.listdir(in_annotations_dir):
+        tree = et.parse(in_annotations_dir + '/' + filename)
+        root = tree.getroot()
+        # Storing the corresponding image to the file.
+        img_filename = in_image_dir+'/' + filename.replace('.xml', '.bmp')
+        img = Image.open(img_filename)
+        isTable = False
+        for child in root:
+            for item in child:
+                st = str(item.attrib)
+                if st == "{'Label': 'Table'}":
+                    out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
+                    #c'è la tabella
+                    isTable = True
+                    for last in item:
+                        img_width,  img_height = img.size
+                        coord = str(last.attrib)
+                        boxConverted = convertToDecimal(coord, img_height)
+                        normalized_box = calc_box(img, boxConverted, img_width, img_height)
+                        #print("NORMALIZED BOX: ",normalized_box.x_center,normalized_box.y_center,normalized_box.height,normalized_box.width)
+                        # Create new annotation files and save them in the right directory, and in the right format(.txt).
+                        out_annotation.write('1 ')
+                        out_annotation.write(str(normalized_box.x_center) + ' ')
+                        out_annotation.write(str(normalized_box.y_center) + ' ')
+                        out_annotation.write(str(normalized_box.width) + ' ')
+                        out_annotation.write(str(normalized_box.height) + '\n')
+                    out_annotation.close()
+                        # Create new image files and save them in the right directory, and in the right format(.jpg)
+            img.save(out_image_dir + '/' + filename.replace('.xml', '.jpg'))
+
+
+# Convert the ICDAR 2017 POD dataset into the darknet format.
+def convert_icdar(in_annotations_dir, in_image_dir, out_annotations_dir, out_image_dir, classes_dir):
+    # Binary class representation.
+    # Create the.names file
+    file = open(classes_dir, 'w+')
+    file.write('tableRegion' + '\n')
+    file.close()
+
+    # Explore the directory.
+    for filename in os.listdir(in_annotations_dir):
+        tree = et.parse(in_annotations_dir + '/' + filename)
+        root = tree.getroot()
+        # Storing the corresponding image to the file.
+        img_filename = in_image_dir + '/' + filename.replace('.xml', '.bmp')
+        img = Image.open(img_filename)
+        for child in root:
+            if child.tag == 'tableRegion':
+                # Create the file only if there is a tableRegion object.
+                out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
+                for item in child:
+                    if item.tag == 'Coords':
+                        img_width, img_height = img.size
+                        normalized_box = calc_box(item, img_width, img_height)
+
+                        # Insert the item in the annotation files and save them in the right directory,
+                        # and in the right format(.txt).
+                        out_annotation.write(str(1) + ' ')
+                        out_annotation.write(str(normalized_box.x_center) + ' ')
+                        out_annotation.write(str(normalized_box.y_center) + ' ')
+                        out_annotation.write(str(normalized_box.width) + ' ')
+                        out_annotation.write(str(normalized_box.height) + '\n')
+                    out_annotation.close()
+                    # Create new image files and save them in the right directory, and in the right format(.jpg)
+        img.save(out_image_dir + '/' + filename.replace('.xml', '.jpg'))
+
+
+def convert_test(input_dir, output_dir):
     # Convert unlabeled images in Darknet format.
 
-    # Path of the folder which contains test images.
-    in_test_dir = "./Dataset/icdar_2017/other"
-    # Path of the folder which will contains test images.
-    out_test_dir = "./Dataset/icdar/test"
-
-    for filename in os.listdir(in_test_dir):
-        img_filename = in_test_dir + '/' + filename
+    for filename in os.listdir(input_dir):
+        img_filename = input_dir + '/' + filename
         img = Image.open(img_filename)
-        img.save(out_test_dir + '/' + filename.replace('.bmp', '.jpg'))
+        img.save(output_dir + '/' + filename.replace('.bmp', '.jpg'))
 
 
-def transform_training_set():
+def transform_training_set(input_dir, output_dir):
     # Transform the train images in the black and white one.
-    # Path of the train set directory.
-    input_dir = "./Dataset/icdar/images"
-    # Path of the output directory.
-    output_dir = "./Dataset/icdar_transformed/images"
 
     for filename in os.listdir(input_dir):
         img_filename = input_dir + '/' + filename
@@ -139,12 +277,8 @@ def transform_training_set():
         cv2.imwrite(output_dir + '/' + filename, trs)
 
 
-def transform_test_set():
+def transform_test_set(input_dir, output_dir):
     # Transform the test images in the black and white one.
-    # Path of the train set directory.
-    input_dir = "./Dataset/icdar/test"
-    # Path of the output directory.
-    output_dir = "./Dataset/icdar_transformed/test"
 
     for filename in os.listdir(input_dir):
         img_filename = input_dir + '/' + filename
@@ -154,9 +288,10 @@ def transform_test_set():
 
 
 if __name__ == '__main__':
-    icdar_to_darknet()
+    convert_icdar("./Dataset/icdar_2017/Annotations", "./Dataset/icdar_2017/Images", "./Dataset/icdar/labels",
+                  "./Dataset/icdar/images", "./Dataset/icdar.names")
     fs = FileSplitter(1600)
     fs.split()
-    convert_test()
-    transform_training_set()
-    transform_test_set()
+    # convert_test("./Dataset/icdar_2017/other", "./Dataset/icdar/test")
+    # transform_training_set("./Dataset/icdar/images", "./Dataset/icdar_transformed/images")
+    # transform_test_set("./Dataset/icdar/test", "./Dataset/icdar_transformed/test")

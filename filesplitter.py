@@ -19,6 +19,7 @@ class FileSplitter:
         self.get_train()
         self.get_valid()
 
+    # Create the .txt file that contains the name of the train files.
     def get_train(self):
         out = open('./Dataset/icdar_train.txt', "w+")
         for i in self.train_set:
@@ -33,6 +34,7 @@ class FileSplitter:
         out.close()
         return self.train_set
 
+    # Create the .txt file that contains the name of the validation files.
     def get_valid(self):
         out = open('./Dataset/icdar_valid.txt', "w+")
         for i in self.valid_set:
@@ -47,4 +49,7 @@ class FileSplitter:
         out.close()
         return self.valid_set
 
+    # Create the test set.
+    def get_test(self):
+        return None
 
