@@ -105,7 +105,7 @@ def calc_box_marmot(img, boxConverted, img_width=1, img_height=1):
     points[1, 1] = points[0, 1]
     points[2, 0] = points[0, 0]
     points[2, 1] = points[3, 1]
-    return create_rectangle(points, img_width, img_height)
+    return create_rectangle_marmot(points, img_width, img_height)
 
 
 # OBSOLETE, there is only a binary representation.
@@ -189,7 +189,10 @@ def marmot_to_darknet():
 
     # Get the dictionary with all the classes
     classes_dir = "./Dataset/marmot.names"
-    # Creare marmot .names
+    # Create the.names file
+    file = open(classes_dir, 'w+')
+    file.write('tableRegion' + '\n')
+    file.close()
 
     for filename in os.listdir(in_annotations_dir):
         tree = et.parse(in_annotations_dir + '/' + filename)
@@ -197,19 +200,17 @@ def marmot_to_darknet():
         # Storing the corresponding image to the file.
         img_filename = in_image_dir+'/' + filename.replace('.xml', '.bmp')
         img = Image.open(img_filename)
-        isTable = False
         for child in root:
             for item in child:
                 st = str(item.attrib)
                 if st == "{'Label': 'Table'}":
                     out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
                     #c'è la tabella
-                    isTable = True
                     for last in item:
                         img_width,  img_height = img.size
                         coord = str(last.attrib)
                         boxConverted = convertToDecimal(coord, img_height)
-                        normalized_box = calc_box(img, boxConverted, img_width, img_height)
+                        normalized_box = calc_box_marmot(img, boxConverted, img_width, img_height)
                         #print("NORMALIZED BOX: ",normalized_box.x_center,normalized_box.y_center,normalized_box.height,normalized_box.width)
                         # Create new annotation files and save them in the right directory, and in the right format(.txt).
                         out_annotation.write('1 ')
