@@ -247,16 +247,16 @@ def convert_icdar(in_annotations_dir, in_image_dir, out_annotations_dir, out_ima
         img.save(out_image_dir + '/' + filename.replace('.xml', '.jpg'))
 
 
+# !!!Probably this will not be used.
 def convert_test(input_dir, output_dir):
     # Convert unlabeled images in Darknet format.
-
     for filename in os.listdir(input_dir):
         img_filename = input_dir + '/' + filename
         img = Image.open(img_filename)
         img.save(output_dir + '/' + filename.replace('.bmp', '.jpg'))
 
 
-def transform_training_set(input_dir, output_dir):
+def transform_dataset(input_dir, output_dir):
     # Transform the train images in the black and white one.
 
     for filename in os.listdir(input_dir):
@@ -266,6 +266,7 @@ def transform_training_set(input_dir, output_dir):
         cv2.imwrite(output_dir + '/' + filename, trs)
 
 
+# !!!Probably this will not be used.
 def transform_test_set(input_dir, output_dir):
     # Transform the test images in the black and white one.
 
@@ -280,9 +281,7 @@ if __name__ == '__main__':
     # Convert the icdar dataset.
     convert_icdar("./Dataset/icdar_2017/Annotations", "./Dataset/icdar_2017/Images", "./Dataset/icdar/labels",
                   "./Dataset/icdar/images", "./Dataset/icdar.names")
-    # Convert the marmot dataset.
-    convert_marmot("./Dataset/marmot_old/data/English/N+P/Labeled", "./Dataset/marmot_old/data/English/N+P/Raw",
-                   "./Dataset/marmot_new/labels", "./Dataset/marmot_new/images", "./Dataset/marmot.names")
+
     # Generate test, validation and test sets for icdar.
     # Split the file randomly.
     fs = FileSplitter(1600)
@@ -295,6 +294,11 @@ if __name__ == '__main__':
     # Input images in '../icdar/images', save the icdar_test.txt in the dataset folder.
     fs.get_test('icdar', '../icdar/images', './Dataset/icdar_test.txt')
 
-    # convert_test("./Dataset/icdar_2017/other", "./Dataset/icdar/test")
-    transform_training_set("./Dataset/icdar/images", "./Dataset/icdar_transformed/images")
-    # transform_test_set("./Dataset/icdar/test", "./Dataset/icdar_transformed/test")
+    # OPTIONAL: right know don't use these functions.
+    # Transform the image in the dataset.
+    # transform_dataset("./Dataset/icdar/images", "./Dataset/icdar_transformed/images")
+
+
+    # Convert the marmot dataset.
+    convert_marmot("./Dataset/marmot_old/data/English/N+P/Labeled", "./Dataset/marmot_old/data/English/N+P/Raw",
+                   "./Dataset/marmot_new/labels", "./Dataset/marmot_new/images", "./Dataset/marmot.names")

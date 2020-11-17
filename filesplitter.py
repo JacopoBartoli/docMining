@@ -50,7 +50,8 @@ class FileSplitter:
                     out.write(in_path+'/POD_000' + str(i) + 'jpg' + '\n')
         elif dataset == 'marmot':
             # Add the correct string format.
-            out.close()
+            print('Add the correct function...')
+        out.close()
         return self.train_set
 
     # Create the .txt file that contains the name of the validation files.
@@ -70,7 +71,8 @@ class FileSplitter:
                     out.write(in_path+'/POD_000' + str(i) + 'jpg' + '\n')
         elif dataset == 'marmot':
             # Add the correct string format.
-            out.close()
+            print('Add the correct function...')
+        out.close()
         return self.valid_set
 
     # Create the .txt file that contains the name of the test files.
@@ -90,6 +92,7 @@ class FileSplitter:
                     out.write(in_path+'/POD_000' + str(i) + 'jpg' + '\n')
         elif dataset == 'marmot':
             # Add the correct string format.
-            out.close()
+            print('Add the correct function...')
+        out.close()
         return self.test_set
 
