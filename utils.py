@@ -1,4 +1,4 @@
-import xml.etree.ElementTree as et
+import xml.etree.ElementTree as Et
 import os
 from rectangle import Rectangle
 from filesplitter import FileSplitter
@@ -26,6 +26,9 @@ def create_rectangle(points, img_width=1, img_height=1):
 
 
 def create_rectangle_marmot(points, img_width=1, img_height=1):
+    # Alternative version of the create_rectangle.
+    # Create a bounding box in darknet format.
+
     # Points[0][0] refer to the x coord of the upper left angle.
     # Points[1][0] refer to the x coord of the upper right angle.
     # Points[2][0] refer to the x coord of the bottom left angle.
@@ -39,6 +42,8 @@ def create_rectangle_marmot(points, img_width=1, img_height=1):
 
 # convert hexadecimal to decimal
 def convert_to_decimal(coord, img_height):
+    # Scrivi qualcosa per spiegare come funziona grazie.
+
     i = 0
     x1 = ''
     y1 = ''
@@ -93,9 +98,8 @@ def calc_box(coord, img_width=1, img_height=1):
 
 
 def calc_box_marmot(box_converted, img_width=1, img_height=1):
-    # The key for this dictionary is 'points'.
+    # Scrivi qualcosa per spiegare come funziona grazie.
 
-    # Iterate over the string to collect the data.
     points = np.zeros((4, 2))
     points[0, 0] = box_converted[0]
     points[0, 1] = box_converted[1]
@@ -114,7 +118,7 @@ def get_classes(dir_path):
     class_dict = {}
     index = 0
     for filename in os.listdir(dir_path):
-        tree = et.parse(dir_path + '/' + filename)
+        tree = Et.parse(dir_path + '/' + filename)
         root = tree.getroot()
         for child in root:
             if child.tag not in class_dict:
@@ -134,47 +138,47 @@ def save_classes(classes, path):
 
 # # Convert the ICDAR 2017 POD dataset into the darknet format.
 # OBSOLETE representation, the not binary one.
-def icdar_to_darknet():
-    # Pass the path as parameter here too?
-
-    # Path of input annotations.
-    in_annotations_dir = "./Dataset/icdar_2017/Annotations"
-    # Output path for the new annotations.
-    out_annotations_dir = "./Dataset/icdar/labels"
-    # Path of input images.
-    in_image_dir = "./Dataset/icdar_2017/Images"
-    # Output path for the new images.
-    out_image_dir = "./Dataset/icdar/images"
-
-    # Get the dictionary with all the classes
-    classes_dir = "./Dataset/icdar.names"
-    class_dict = get_classes(in_annotations_dir)
-    print(class_dict)
-    save_classes(class_dict, classes_dir)
-
-    for filename in os.listdir(in_annotations_dir):
-        tree = et.parse(in_annotations_dir + '/' + filename)
-        root = tree.getroot()
-        # Storing the corresponding image to the file.
-        img_filename = in_image_dir + '/' + filename.replace('.xml', '.bmp')
-        img = Image.open(img_filename)
-        if len(root.items()) != 0:
-            out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
-        for child in root:
-            for item in child:
-                if item.tag == 'Coords':
-                    img_width, img_height = img.size
-                    normalized_box = calc_box(item, img_width, img_height)
-                    # Create new annotation files and save them in the right directory, and in the right format(.txt).
-                    out_annotation.write(str(class_dict[child.tag]) + ' ')
-                    out_annotation.write(str(normalized_box.x_center) + ' ')
-                    out_annotation.write(str(normalized_box.y_center) + ' ')
-                    out_annotation.write(str(normalized_box.width) + ' ')
-                    out_annotation.write(str(normalized_box.height) + '\n')
-
-                    # Create new image files and save them in the right directory, and in the right format(.jpg)
-        img.save(out_image_dir + '/' + filename.replace('.xml', '.jpg'))
-        out_annotation.close()
+# def icdar_to_darknet():
+#     # Pass the path as parameter here too?
+#
+#     # Path of input annotations.
+#     in_annotations_dir = "./Dataset/icdar_2017/Annotations"
+#     # Output path for the new annotations.
+#     out_annotations_dir = "./Dataset/icdar/labels"
+#     # Path of input images.
+#     in_image_dir = "./Dataset/icdar_2017/Images"
+#     # Output path for the new images.
+#     out_image_dir = "./Dataset/icdar/images"
+#
+#     # Get the dictionary with all the classes
+#     classes_dir = "./Dataset/icdar.names"
+#     class_dict = get_classes(in_annotations_dir)
+#     print(class_dict)
+#     save_classes(class_dict, classes_dir)
+#
+#     for filename in os.listdir(in_annotations_dir):
+#         tree = et.parse(in_annotations_dir + '/' + filename)
+#         root = tree.getroot()
+#         # Storing the corresponding image to the file.
+#         img_filename = in_image_dir + '/' + filename.replace('.xml', '.bmp')
+#         img = Image.open(img_filename)
+#         if len(root.items()) != 0:
+#             out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
+#         for child in root:
+#             for item in child:
+#                 if item.tag == 'Coords':
+#                     img_width, img_height = img.size
+#                     normalized_box = calc_box(item, img_width, img_height)
+#                     # Create new annotation files and save them in the right directory, and in the right format(.txt).
+#                     out_annotation.write(str(class_dict[child.tag]) + ' ')
+#                     out_annotation.write(str(normalized_box.x_center) + ' ')
+#                     out_annotation.write(str(normalized_box.y_center) + ' ')
+#                     out_annotation.write(str(normalized_box.width) + ' ')
+#                     out_annotation.write(str(normalized_box.height) + '\n')
+#
+#                     # Create new image files and save them in the right directory, and in the right format(.jpg)
+#         img.save(out_image_dir + '/' + filename.replace('.xml', '.jpg'))
+#         out_annotation.close()
 
 
 def convert_marmot(in_annotations_dir, in_image_dir, out_annotations_dir, out_image_dir, classes_dir):
@@ -184,7 +188,7 @@ def convert_marmot(in_annotations_dir, in_image_dir, out_annotations_dir, out_im
     file.close()
 
     for filename in os.listdir(in_annotations_dir):
-        tree = et.parse(in_annotations_dir + '/' + filename)
+        tree = Et.parse(in_annotations_dir + '/' + filename)
         root = tree.getroot()
         # Storing the corresponding image to the file.
         img_filename = in_image_dir+'/' + filename.replace('.xml', '.bmp')
@@ -207,8 +211,8 @@ def convert_marmot(in_annotations_dir, in_image_dir, out_annotations_dir, out_im
                         out_annotation.write(str(normalized_box.width) + ' ')
                         out_annotation.write(str(normalized_box.height) + '\n')
                     out_annotation.close()
-                        # Create new image files and save them in the right directory, and in the right format(.jpg)
-            img.save(out_image_dir + '/' + filename.replace('.xml', '.jpg'))
+        # Create new image files and save them in the right directory, and in the right format(.jpg)
+        img.save(out_image_dir + '/' + filename.replace('.xml', '.jpg'))
 
 
 # Convert the ICDAR 2017 POD dataset into the darknet format.
@@ -221,7 +225,7 @@ def convert_icdar(in_annotations_dir, in_image_dir, out_annotations_dir, out_ima
 
     # Explore the directory.
     for filename in os.listdir(in_annotations_dir):
-        tree = et.parse(in_annotations_dir + '/' + filename)
+        tree = Et.parse(in_annotations_dir + '/' + filename)
         root = tree.getroot()
         # Storing the corresponding image to the file.
         img_filename = in_image_dir + '/' + filename.replace('.xml', '.bmp')
@@ -243,7 +247,7 @@ def convert_icdar(in_annotations_dir, in_image_dir, out_annotations_dir, out_ima
                         out_annotation.write(str(normalized_box.width) + ' ')
                         out_annotation.write(str(normalized_box.height) + '\n')
                     out_annotation.close()
-                    # Create new image files and save them in the right directory, and in the right format(.jpg)
+        # Create new image files and save them in the right directory, and in the right format(.jpg)
         img.save(out_image_dir + '/' + filename.replace('.xml', '.jpg'))
 
 
@@ -298,7 +302,6 @@ if __name__ == '__main__':
     # Transform the image in the dataset.
     # transform_dataset("./Dataset/icdar/images", "./Dataset/icdar_transformed/images")
 
-
     # Convert the marmot dataset.
-    convert_marmot("./Dataset/marmot_old/data/English/N+P/Labeled", "./Dataset/marmot_old/data/English/N+P/Raw",
-                   "./Dataset/marmot_new/labels", "./Dataset/marmot_new/images", "./Dataset/marmot.names")
+    convert_marmot("./Dataset/marmot_original/labels", "./Dataset/marmot_original/images",
+                   "./Dataset/marmot/labels", "./Dataset/marmot/images", "./Dataset/marmot.names")
