@@ -42,8 +42,11 @@ def create_rectangle_marmot(points, img_width=1, img_height=1):
 
 # convert hexadecimal to decimal
 def convert_to_decimal(coord, img_height):
-    # Scrivi qualcosa per spiegare come funziona grazie.
-
+    # takes the whole string relative to the BBox
+    # from character 10 to 25 (16 bit) is the string relating to the first hexadecimal number which is the x at the top left
+    # from character 27 to 42 (16 bit) is the string relating to the second hexadecimal number which is the y in the upper left
+    # from character 44 to 59 (16 bit) is the string relating to the third hexadecimal number which is the x at the bottom right
+    # from character 61 to 76 (16 bit) is the string relating to the fourth hexadecimal number which is the y at the bottom right.
     i = 0
     x1 = ''
     y1 = ''
@@ -59,7 +62,11 @@ def convert_to_decimal(coord, img_height):
         if 61 <= i <= 76:
             y2 = y2 + char
         i = i + 1
+
+    # array of strings where x1, y1 is the upper left corner and x2, y2 is the lower right hex corner
     bbox = [x1, y1, x2, y2]
+
+    # convert hex string to decimal number
     conv_pound = [struct.unpack('!d', bytes.fromhex(t))[0] for t in bbox]
     i = 0
     for c in conv_pound:
@@ -98,16 +105,29 @@ def calc_box(coord, img_width=1, img_height=1):
 
 
 def calc_box_marmot(box_converted, img_width=1, img_height=1):
-    # Scrivi qualcosa per spiegare come funziona grazie.
-
+    # assign value to each point, box_converted contains in order [x_up_left, y_up_left, x_bottom_right, y_bottom_right]
+    # Points[0,0] refer to the x coord of the upper left angle.
+    # Points[1,0] refer to the x coord of the upper right angle.
+    # Points[2,0] refer to the x coord of the bottom left angle.
+    # Points[3,0] refer to the x coord of the bottom right angle.
+    # initialize the dot matrix
     points = np.zeros((4, 2))
+    # check the x in the upper left
     points[0, 0] = box_converted[0]
+    # check the y in the upper left
     points[0, 1] = box_converted[1]
+    # check the x at the bottom right
     points[3, 0] = box_converted[2]
+    # check the y at the bottom right
     points[3, 1] = box_converted[3]
+    # calculate the remaining points
+    # check x top right = x bottom right
     points[1, 0] = points[3, 0]
+    # check y top right = y top left
     points[1, 1] = points[0, 1]
+    # check x bottom left = x top left
     points[2, 0] = points[0, 0]
+    # check y bottom left = y bottom right
     points[2, 1] = points[3, 1]
     return create_rectangle_marmot(points, img_width, img_height)
 
@@ -292,7 +312,7 @@ def deleteXmlFromImages():
 
 if __name__ == '__main__':
 
-    #deleteXmlFromImages()
+    # deleteXmlFromImages()
 
     # Convert the icdar dataset.
     deleteXmlFromImages()
