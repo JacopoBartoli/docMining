@@ -340,3 +340,14 @@ if __name__ == '__main__':
     # Convert the marmot dataset.
     convert_marmot("./Dataset/marmot_original/labels", "./Dataset/marmot_original/images",
                    "./Dataset/marmot/labels", "./Dataset/marmot/images", "./Dataset/marmot.names")
+"""
+    fs = FileSplitter(993)
+    fs.split()
+    # Generate the file that contains the list of the train, validation and test sets.
+    # Input images in '../marmot/images', save the marmot_train.txt in the dataset folder.
+    fs.get_train('marmot', '../marmot/images', './Dataset/marmot_train.txt')
+    # Input images in '../marmot/images', save the marmot_valid.txt in the dataset folder.
+    fs.get_valid('marmot', '../marmot/images', './Dataset/marmot_valid.txt')
+    # Input images in '../marmot/images', save the marmot_test.txt in the dataset folder.
+    fs.get_test('marmot', '../marmot/images', './Dataset/marmot_test.txt')
+    """

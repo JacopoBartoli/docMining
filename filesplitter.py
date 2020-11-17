@@ -47,10 +47,15 @@ class FileSplitter:
                 elif i >= 10:
                     out.write(in_path+'/POD_00' + str(i) + '.jpg' + '\n')
                 elif i < 10:
-                    out.write(in_path+'/POD_000' + str(i) + 'jpg' + '\n')
+                    out.write(in_path+'/POD_000' + str(i) + '.jpg' + '\n')
         elif dataset == 'marmot':
             # Add the correct string format.
-            print('Add the correct function...')
+            """
+            x=0
+            for filename in in_path and x<self.train_set:
+                out.write(in_path + '/' + filename)
+                x=x+1
+                """
         out.close()
         return self.train_set
 
@@ -60,7 +65,7 @@ class FileSplitter:
     def get_valid(self, dataset, in_path, out_path):
         out = open(out_path, "w+")
         if dataset == 'icdar':
-            for i in self.train_set:
+            for i in self.valid_set:
                 if i >= 1000:
                     out.write(in_path+'/POD_' + str(i) + '.jpg' + '\n')
                 elif i >= 100:
@@ -68,10 +73,14 @@ class FileSplitter:
                 elif i >= 10:
                     out.write(in_path+'/POD_00' + str(i) + '.jpg' + '\n')
                 elif i < 10:
-                    out.write(in_path+'/POD_000' + str(i) + 'jpg' + '\n')
+                    out.write(in_path+'/POD_000' + str(i) + '.jpg' + '\n')
         elif dataset == 'marmot':
-            # Add the correct string format.
-            print('Add the correct function...')
+            """
+            x = 0
+            for filename in in_path and x < self.valid_set:
+                out.write(in_path + '/' + filename)
+                x = x + 1
+                """
         out.close()
         return self.valid_set
 
@@ -81,7 +90,7 @@ class FileSplitter:
     def get_test(self, dataset, in_path, out_path):
         out = open(out_path, "w+")
         if dataset == 'icdar':
-            for i in self.train_set:
+            for i in self.test_set:
                 if i >= 1000:
                     out.write(in_path+'/POD_' + str(i) + '.jpg' + '\n')
                 elif i >= 100:
@@ -89,10 +98,14 @@ class FileSplitter:
                 elif i >= 10:
                     out.write(in_path+'/POD_00' + str(i) + '.jpg' + '\n')
                 elif i < 10:
-                    out.write(in_path+'/POD_000' + str(i) + 'jpg' + '\n')
+                    out.write(in_path+'/POD_000' + str(i) + '.jpg' + '\n')
         elif dataset == 'marmot':
-            # Add the correct string format.
-            print('Add the correct function...')
+            """
+            x = 0
+            for filename in in_path and x < self.test_set:
+                out.write(in_path + '/' + filename)
+                x = x + 1
+            """
         out.close()
         return self.test_set
 
