@@ -4,52 +4,92 @@ import numpy as np
 
 class FileSplitter:
     def __init__(self, dataset_size):
-        # Indices of the element of the validation and the train set
+        # Each array contains the indices of the element of the validation and the train and test sets.
         self.train_set = []
         self.valid_set = []
+        self.test_set = []
+        # Number of element contained in the dataset.
         self.dataset_size = dataset_size
 
-    def split(self, train_percentage=80):
+    # Divide randomly the dataset.
+    def split(self, train_percentage=80, test_percentage=10):
+        # Generate randomly the validation, test and train sets.
+        # Generate sizes of the sets. Right now the percentages are T-V-T80-10-10.
         train_size = int((self.dataset_size*train_percentage)/100)
-        valid_size = self.dataset_size-train_size
-        self.train_set = np.random.random_integers(0, 1599, size=int(train_size))
-        for i in range(0, self.dataset_size):
-            if i not in self.train_set:
-                self.valid_set.append(i)
-        self.get_train()
-        self.get_valid()
+        test_size = int((self.dataset_size*test_percentage)/100)
+        valid_size = self.dataset_size-train_size-test_size
+        # Generate randomly the train
+        self.train_set = np.random.random_integers(0, self.dataset_size-1, size=int(train_size))
+
+        # Generate and insert the elements in the test set.
+        for i in range(0, test_size):
+            rand = np.random_integers(0, self.dataset_size, size=1)
+            if rand not in self.train_set:
+                self.test_set.append(rand)
+
+        # Generate and insert the elements in the validation set.
+        for i in range(0, valid_size):
+            rand = np.random_integers(0,self.dataset_size, size=1)
+            if (rand not in self.train_set) and (rand not in self.test_set):
+                self.valid_set.append(rand)
 
     # Create the .txt file that contains the name of the train files.
-    def get_train(self):
-        out = open('./Dataset/icdar_train.txt', "w+")
-        for i in self.train_set:
-            if i >= 1000:
-                out.write('../icdar/images/POD_' + str(i) + '.jpg' + '\n')
-            elif i >= 100:
-                out.write('../icdar/images/POD_0' + str(i) + '.jpg' + '\n')
-            elif i >= 10:
-                out.write('../icdar/images/POD_00' + str(i) + '.jpg' + '\n')
-            elif i < 10:
-                out.write('../icdar/images/POD_000' + str(i) + 'jpg' + '\n')
-        out.close()
+    # in_path: path where the image files can be found.
+    # out_path: path where the .txt should be saved.
+    def get_train(self, dataset, in_path, out_path):
+        out = open(out_path, "w+")
+        if dataset == 'icdar':
+            for i in self.train_set:
+                if i >= 1000:
+                    out.write(in_path+'/POD_' + str(i) + '.jpg' + '\n')
+                elif i >= 100:
+                    out.write(in_path+'/POD_0' + str(i) + '.jpg' + '\n')
+                elif i >= 10:
+                    out.write(in_path+'/POD_00' + str(i) + '.jpg' + '\n')
+                elif i < 10:
+                    out.write(in_path+'/POD_000' + str(i) + 'jpg' + '\n')
+        elif dataset == 'marmot':
+            # Add the correct string format.
+            out.close()
         return self.train_set
 
     # Create the .txt file that contains the name of the validation files.
-    def get_valid(self):
-        out = open('./Dataset/icdar_valid.txt', "w+")
-        for i in self.valid_set:
-            if i >= 1000:
-                out.write('../icdar/images/POD_' + str(i) + '.jpg' + '\n')
-            elif i >= 100:
-                out.write('../icdar/images/POD_0' + str(i) + '.jpg' + '\n')
-            elif i >= 10:
-                out.write('../icdar/images/POD_00' + str(i) + '.jpg' + '\n')
-            elif i < 10:
-                out.write('../icdar/images/POD_000' + str(i) + 'jpg' + '\n')
-        out.close()
+    # in_path: path where the image files can be found.
+    # out_path: path where the .txt should be saved.
+    def get_valid(self, dataset, in_path, out_path):
+        out = open(out_path, "w+")
+        if dataset == 'icdar':
+            for i in self.train_set:
+                if i >= 1000:
+                    out.write(in_path+'/POD_' + str(i) + '.jpg' + '\n')
+                elif i >= 100:
+                    out.write(in_path+'/POD_0' + str(i) + '.jpg' + '\n')
+                elif i >= 10:
+                    out.write(in_path+'/POD_00' + str(i) + '.jpg' + '\n')
+                elif i < 10:
+                    out.write(in_path+'/POD_000' + str(i) + 'jpg' + '\n')
+        elif dataset == 'marmot':
+            # Add the correct string format.
+            out.close()
         return self.valid_set
 
-    # Create the test set.
-    def get_test(self):
-        return None
+    # Create the .txt file that contains the name of the test files.
+    # in_path: path where the image files can be found.
+    # out_path: path where the .txt should be saved.
+    def get_test(self, dataset, in_path, out_path):
+        out = open(out_path, "w+")
+        if dataset == 'icdar':
+            for i in self.train_set:
+                if i >= 1000:
+                    out.write(in_path+'/POD_' + str(i) + '.jpg' + '\n')
+                elif i >= 100:
+                    out.write(in_path+'/POD_0' + str(i) + '.jpg' + '\n')
+                elif i >= 10:
+                    out.write(in_path+'/POD_00' + str(i) + '.jpg' + '\n')
+                elif i < 10:
+                    out.write(in_path+'/POD_000' + str(i) + 'jpg' + '\n')
+        elif dataset == 'marmot':
+            # Add the correct string format.
+            out.close()
+        return self.test_set
 

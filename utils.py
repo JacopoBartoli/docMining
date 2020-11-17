@@ -38,24 +38,24 @@ def create_rectangle_marmot(points, img_width=1, img_height=1):
 
 
 # convert hexadecimal to decimal
-def convertToDecimal(coord, img_height):
+def convert_to_decimal(coord, img_height):
     i = 0
     x1 = ''
     y1 = ''
     x2 = ''
     y2 = ''
     for char in coord:
-        if i >= 10 and i <= 25:
+        if 10 <= i <= 25:
             x1 = x1 + char
-        if i >= 27 and i <= 42:
+        if 27 <= i <= 42:
             y1 = y1 + char
-        if i >= 44 and i <= 59:
+        if 44 <= i <= 59:
             x2 = x2 + char
-        if i >= 61 and i <= 76:
+        if 61 <= i <= 76:
             y2 = y2 + char
         i = i + 1
-    BBox = [x1, y1, x2, y2]
-    conv_pound = [struct.unpack('!d', bytes.fromhex(t))[0] for t in BBox]
+    bbox = [x1, y1, x2, y2]
+    conv_pound = [struct.unpack('!d', bytes.fromhex(t))[0] for t in bbox]
     i = 0
     for c in conv_pound:
         if i % 2 == 0:
@@ -92,15 +92,15 @@ def calc_box(coord, img_width=1, img_height=1):
     return create_rectangle(points, img_width, img_height)
 
 
-def calc_box_marmot(img, boxConverted, img_width=1, img_height=1):
+def calc_box_marmot(box_converted, img_width=1, img_height=1):
     # The key for this dictionary is 'points'.
 
     # Iterate over the string to collect the data.
     points = np.zeros((4, 2))
-    points[0, 0] = boxConverted[0]
-    points[0, 1] = boxConverted[1]
-    points[3, 0] = boxConverted[2]
-    points[3, 1] = boxConverted[3]
+    points[0, 0] = box_converted[0]
+    points[0, 1] = box_converted[1]
+    points[3, 0] = box_converted[2]
+    points[3, 1] = box_converted[3]
     points[1, 0] = points[3, 0]
     points[1, 1] = points[0, 1]
     points[2, 0] = points[0, 0]
@@ -177,21 +177,10 @@ def icdar_to_darknet():
         out_annotation.close()
 
 
-def marmot_to_darknet():
-    # Path of input annotations.
-    in_annotations_dir = "./Dataset/marmot_old/data/English/N+P/Labeled"
-    # Output path for the new annotations.
-    out_annotations_dir = "./Dataset/marmot_new/labels"
-    # Path of input images.
-    in_image_dir = "./Dataset/marmot_old/data/English/N+P/Raw"
-    # Output path for the new images.
-    out_image_dir = "./Dataset/marmot_new/images"
-
-    # Get the dictionary with all the classes
-    classes_dir = "./Dataset/marmot.names"
+def convert_marmot(in_annotations_dir, in_image_dir, out_annotations_dir, out_image_dir, classes_dir):
     # Create the.names file
     file = open(classes_dir, 'w+')
-    file.write('tableRegion' + '\n')
+    file.write('tableRegion')
     file.close()
 
     for filename in os.listdir(in_annotations_dir):
@@ -205,14 +194,13 @@ def marmot_to_darknet():
                 st = str(item.attrib)
                 if st == "{'Label': 'Table'}":
                     out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
-                    #c'è la tabella
                     for last in item:
                         img_width,  img_height = img.size
                         coord = str(last.attrib)
-                        boxConverted = convertToDecimal(coord, img_height)
-                        normalized_box = calc_box_marmot(img, boxConverted, img_width, img_height)
-                        #print("NORMALIZED BOX: ",normalized_box.x_center,normalized_box.y_center,normalized_box.height,normalized_box.width)
-                        # Create new annotation files and save them in the right directory, and in the right format(.txt).
+                        box_converted = convert_to_decimal(coord, img_height)
+                        normalized_box = calc_box_marmot(box_converted, img_width, img_height)
+                        # Insert the item in the annotation files and save them in the right directory,
+                        # and in the right format(.txt).
                         out_annotation.write('1 ')
                         out_annotation.write(str(normalized_box.x_center) + ' ')
                         out_annotation.write(str(normalized_box.y_center) + ' ')
@@ -228,7 +216,7 @@ def convert_icdar(in_annotations_dir, in_image_dir, out_annotations_dir, out_ima
     # Binary class representation.
     # Create the.names file
     file = open(classes_dir, 'w+')
-    file.write('tableRegion' + '\n')
+    file.write('tableRegion')
     file.close()
 
     # Explore the directory.
@@ -289,10 +277,24 @@ def transform_test_set(input_dir, output_dir):
 
 
 if __name__ == '__main__':
+    # Convert the icdar dataset.
     convert_icdar("./Dataset/icdar_2017/Annotations", "./Dataset/icdar_2017/Images", "./Dataset/icdar/labels",
                   "./Dataset/icdar/images", "./Dataset/icdar.names")
+    # Convert the marmot dataset.
+    convert_marmot("./Dataset/marmot_old/data/English/N+P/Labeled", "./Dataset/marmot_old/data/English/N+P/Raw",
+                   "./Dataset/marmot_new/labels", "./Dataset/marmot_new/images", "./Dataset/marmot.names")
+    # Generate test, validation and test sets for icdar.
+    # Split the file randomly.
     fs = FileSplitter(1600)
     fs.split()
+    # Generate the file that contains the list of the train, validation and test sets.
+    # Input images in '../icdar/images', save the icdar_train.txt in the dataset folder.
+    fs.get_train('icdar', '../icdar/images', './Dataset/icdar_train.txt')
+    # Input images in '../icdar/images', save the icdar_valid.txt in the dataset folder.
+    fs.get_valid('icdar', '../icdar/images', './Dataset/icdar_valid.txt')
+    # Input images in '../icdar/images', save the icdar_test.txt in the dataset folder.
+    fs.get_test('icdar', '../icdar/images', './Dataset/icdar_test.txt')
+
     # convert_test("./Dataset/icdar_2017/other", "./Dataset/icdar/test")
-    # transform_training_set("./Dataset/icdar/images", "./Dataset/icdar_transformed/images")
+    transform_training_set("./Dataset/icdar/images", "./Dataset/icdar_transformed/images")
     # transform_test_set("./Dataset/icdar/test", "./Dataset/icdar_transformed/test")
