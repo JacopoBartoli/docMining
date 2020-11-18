@@ -23,13 +23,13 @@ class FileSplitter:
 
         # Generate and insert the elements in the test set.
         for i in range(0, test_size):
-            rand = np.random.random_integers(0, self.dataset_size-1, size=1)
+            rand = np.random.random_integers(0, self.dataset_size-1)
             if rand not in self.train_set:
                 self.test_set.append(rand)
 
         # Generate and insert the elements in the validation set.
         for i in range(0, valid_size):
-            rand = np.random.random_integers(0, self.dataset_size-1, size=1)
+            rand = np.random.random_integers(0, self.dataset_size-1)
             if (rand not in self.train_set) and (rand not in self.test_set):
                 self.valid_set.append(rand)
 
