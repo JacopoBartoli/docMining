@@ -46,7 +46,6 @@ class FileSplitter:
         out = open(out_path, "w+")
         if dataset == 'icdar':
             for i in self.train_set:
-                print(i)
                 if i >= 1000:
                     out.write(in_path+'/POD_' + str(i) + '.jpg' + '\n')
                 elif i >= 100:
