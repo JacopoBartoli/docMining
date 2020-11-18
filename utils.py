@@ -315,7 +315,7 @@ if __name__ == '__main__':
     # deleteXmlFromImages()
 
     # Convert the icdar dataset.
-    deleteXmlFromImages()
+    #deleteXmlFromImages()
   
     
     convert_icdar("./Dataset/icdar_2017/Annotations", "./Dataset/icdar_2017/Images", "./Dataset/icdar/labels",

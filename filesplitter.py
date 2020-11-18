@@ -22,16 +22,22 @@ class FileSplitter:
         self.train_set = np.random.random_integers(0, self.dataset_size-1, size=int(train_size))
 
         # Generate and insert the elements in the test set.
-        for i in range(0, test_size):
+        #for i in range(0, test_size):
+        dim=0
+        while dim<test_size:
             rand = np.random.random_integers(0, self.dataset_size-1, size=1)
             if rand not in self.train_set:
                 self.test_set.append(rand)
+                dim=dim+1
 
         # Generate and insert the elements in the validation set.
-        for i in range(0, valid_size):
+        #for i in range(0, valid_size):
+        dim = 0
+        while dim < valid_size:
             rand = np.random.random_integers(0, self.dataset_size-1, size=1)
             if (rand not in self.train_set) and (rand not in self.test_set):
                 self.valid_set.append(rand)
+                dim=dim+1
 
     # Create the .txt file that contains the name of the train files.
     # in_path: path where the image files can be found.
@@ -40,6 +46,7 @@ class FileSplitter:
         out = open(out_path, "w+")
         if dataset == 'icdar':
             for i in self.train_set:
+                print(i)
                 if i >= 1000:
                     out.write(in_path+'/POD_' + str(i) + '.jpg' + '\n')
                 elif i >= 100:
@@ -66,14 +73,16 @@ class FileSplitter:
         out = open(out_path, "w+")
         if dataset == 'icdar':
             for i in self.valid_set:
+                name = str(i).replace('[','')
+                name = name.replace(']','')
                 if i >= 1000:
-                    out.write(in_path+'/POD_' + str(i) + '.jpg' + '\n')
+                    out.write(in_path+'/POD_' + name + '.jpg' + '\n')
                 elif i >= 100:
-                    out.write(in_path+'/POD_0' + str(i) + '.jpg' + '\n')
+                    out.write(in_path+'/POD_0' + name + '.jpg' + '\n')
                 elif i >= 10:
-                    out.write(in_path+'/POD_00' + str(i) + '.jpg' + '\n')
+                    out.write(in_path+'/POD_00' + name + '.jpg' + '\n')
                 elif i < 10:
-                    out.write(in_path+'/POD_000' + str(i) + '.jpg' + '\n')
+                    out.write(in_path+'/POD_000' + name + '.jpg' + '\n')
         elif dataset == 'marmot':
             """
             x = 0
@@ -91,14 +100,16 @@ class FileSplitter:
         out = open(out_path, "w+")
         if dataset == 'icdar':
             for i in self.test_set:
+                name = str(i).replace('[', '')
+                name = name.replace(']', '')
                 if i >= 1000:
-                    out.write(in_path+'/POD_' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_' + name + '.jpg' + '\n')
                 elif i >= 100:
-                    out.write(in_path+'/POD_0' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_0' + name + '.jpg' + '\n')
                 elif i >= 10:
-                    out.write(in_path+'/POD_00' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_00' + name + '.jpg' + '\n')
                 elif i < 10:
-                    out.write(in_path+'/POD_000' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_000' + name + '.jpg' + '\n')
         elif dataset == 'marmot':
             """
             x = 0
