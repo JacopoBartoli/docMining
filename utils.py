@@ -300,6 +300,7 @@ def transform_test_set(input_dir, output_dir):
         trs = image_transformer.image_transformation(image)
         cv2.imwrite(output_dir + '/' + filename, trs)
 
+
 # Delete the xml files into folder images of original marmot dataset.
 def deleteXmlFromImages():
     dir='./Dataset/marmot_original/images'
@@ -309,14 +310,12 @@ def deleteXmlFromImages():
             os.remove(dir + "/" + filename)
 
 
-
 if __name__ == '__main__':
 
     # deleteXmlFromImages()
 
     # Convert the icdar dataset.
-    #deleteXmlFromImages()
-  
+    # deleteXmlFromImages()
     
     convert_icdar("./Dataset/icdar_2017/Annotations", "./Dataset/icdar_2017/Images", "./Dataset/icdar/labels",
                   "./Dataset/icdar/images", "./Dataset/icdar.names")
