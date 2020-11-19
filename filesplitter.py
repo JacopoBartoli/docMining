@@ -1,5 +1,5 @@
 import numpy as np
-
+import os
 
 class FileSplitter:
     def __init__(self, dataset_size):
@@ -48,13 +48,11 @@ class FileSplitter:
                 elif i < 10:
                     out.write(in_path+'/POD_000' + str(i) + '.jpg' + '\n')
         elif dataset == 'marmot':
-            # Add the correct string format.
-            """
-            x=0
-            for filename in in_path and x<self.train_set:
-                out.write(in_path + '/' + filename)
-                x=x+1
-                """
+            marmot_images = []
+            for filename in os.listdir(in_path):
+                marmot_images.append(filename)
+            for i in self.train_set:
+                out.write(in_path + '/' + str(marmot_images[i]) + '\n')
         out.close()
         return self.train_set
 
@@ -74,12 +72,11 @@ class FileSplitter:
                 elif i < 10:
                     out.write(in_path+'/POD_000' + str(i) + '.jpg' + '\n')
         elif dataset == 'marmot':
-            """
-            x = 0
-            for filename in in_path and x < self.valid_set:
-                out.write(in_path + '/' + filename)
-                x = x + 1
-                """
+            marmot_images = []
+            for filename in os.listdir(in_path):
+                marmot_images.append(filename)
+            for i in self.valid_set:
+                out.write(in_path + '/' + str(marmot_images[i])  + '\n')
         out.close()
         return self.valid_set
 
@@ -99,12 +96,11 @@ class FileSplitter:
                 elif i < 10:
                     out.write(in_path+'/POD_000' + str(i) + '.jpg' + '\n')
         elif dataset == 'marmot':
-            """
-            x = 0
-            for filename in in_path and x < self.test_set:
-                out.write(in_path + '/' + filename)
-                x = x + 1
-            """
+            marmot_images = []
+            for filename in os.listdir(in_path):
+                marmot_images.append(filename)
+            for i in self.test_set:
+                out.write(in_path + '/' + str(marmot_images[i])  + '\n')
         out.close()
         return self.test_set
 
