@@ -42,11 +42,13 @@ def create_rectangle_marmot(points, img_width=1, img_height=1):
 
 # convert hexadecimal to decimal
 def convert_to_decimal(coord, img_height):
-    # takes the whole string relative to the BBox
-    # from character 10 to 25 (16 bit) is the string relating to the first hexadecimal number which is the x at the top left
-    # from character 27 to 42 (16 bit) is the string relating to the second hexadecimal number which is the y in the upper left
-    # from character 44 to 59 (16 bit) is the string relating to the third hexadecimal number which is the x at the bottom right
-    # from character 61 to 76 (16 bit) is the string relating to the fourth hexadecimal number which is the y at the bottom right.
+    # Takes the whole string relative to the BBox
+
+    # Each coord of the box is represented by an hexadecimal number.
+    # The characters from 10 to 25 contains the information of the x coord of the top left corner.
+    # The characters from 27 to 42 contains the information of the y coord of the top left corner.
+    # The characters from 44 to 59 contains the information of the x coord of the top left corner.
+    # The characters from 61 to 76 contains the information of the y coord of the top left corner.
     i = 0
     x1 = ''
     y1 = ''
@@ -63,10 +65,11 @@ def convert_to_decimal(coord, img_height):
             y2 = y2 + char
         i = i + 1
 
-    # array of strings where x1, y1 is the upper left corner and x2, y2 is the lower right hex corner
+    # The couple of strings (x1,y1) represent the top left corner coord.
+    # The couple of strings (x2,y2) represent the bottom left corner coord.
     bbox = [x1, y1, x2, y2]
 
-    # convert hex string to decimal number
+    # Convert hex strings to decimal numbers.
     conv_pound = [struct.unpack('!d', bytes.fromhex(t))[0] for t in bbox]
     i = 0
     for c in conv_pound:
@@ -105,29 +108,31 @@ def calc_box(coord, img_width=1, img_height=1):
 
 
 def calc_box_marmot(box_converted, img_width=1, img_height=1):
-    # assign value to each point, box_converted contains in order [x_up_left, y_up_left, x_bottom_right, y_bottom_right]
+    # Assign value to each point, box_converted contains in order [x_up_left, y_up_left, x_bottom_right, y_bottom_right]
     # Points[0,0] refer to the x coord of the upper left angle.
     # Points[1,0] refer to the x coord of the upper right angle.
     # Points[2,0] refer to the x coord of the bottom left angle.
     # Points[3,0] refer to the x coord of the bottom right angle.
-    # initialize the dot matrix
+
+    # Initialize the dot matrix
     points = np.zeros((4, 2))
-    # check the x in the upper left
+    # Assign the x in the upper left
     points[0, 0] = box_converted[0]
-    # check the y in the upper left
+    # Assign the y in the upper left
     points[0, 1] = box_converted[1]
-    # check the x at the bottom right
+    # Assign the x at the bottom right
     points[3, 0] = box_converted[2]
-    # check the y at the bottom right
+    # Assign the y at the bottom right
     points[3, 1] = box_converted[3]
-    # calculate the remaining points
-    # check x top right = x bottom right
+
+    # Calculate the remaining rectangle points.
+    # Assign x top right = x bottom right
     points[1, 0] = points[3, 0]
-    # check y top right = y top left
+    # Assign y top right = y top left
     points[1, 1] = points[0, 1]
-    # check x bottom left = x top left
+    # Assign x bottom left = x top left
     points[2, 0] = points[0, 0]
-    # check y bottom left = y bottom right
+    # Assign y bottom left = y bottom right
     points[2, 1] = points[3, 1]
     return create_rectangle_marmot(points, img_width, img_height)
 
@@ -303,7 +308,7 @@ def transform_test_set(input_dir, output_dir):
 
 # Delete the xml files into folder images of original marmot dataset.
 def deleteXmlFromImages():
-    dir='./Dataset/marmot_original/images'
+    dir = './Dataset/marmot_original/images'
     for filename in os.listdir(dir):
         st = str(filename)
         if st.endswith('.xml'):
@@ -325,11 +330,11 @@ if __name__ == '__main__':
     fs.split()
     # Generate the file that contains the list of the train, validation and test sets.
     # Input images in '../icdar/images', save the icdar_train.txt in the dataset folder.
-    fs.get_train('icdar', '../icdar/images', './Dataset/icdar_train.txt')
+    fs.get_train('icdar', './Dataset/icdar/images', './Dataset/icdar_train.txt')
     # Input images in '../icdar/images', save the icdar_valid.txt in the dataset folder.
-    fs.get_valid('icdar', '../icdar/images', './Dataset/icdar_valid.txt')
-    # Input images in '../icdar/images', save the icdar_test.txt in the dataset folder.
-    fs.get_test('icdar', '../icdar/images', './Dataset/icdar_test.txt')
+    fs.get_valid('icdar', './Dataset/icdar/images', './Dataset/icdar_valid.txt')
+    # Input images in './Dataset/icdar/images', save the icdar_test.txt in the dataset folder.
+    fs.get_test('icdar', './Dataset/icdar/images', './Dataset/icdar_test.txt')
 
     # OPTIONAL: right know don't use these functions.
     # Transform the image in the dataset.

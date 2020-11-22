@@ -1,6 +1,7 @@
 import numpy as np
 import os
 
+
 class FileSplitter:
     def __init__(self, dataset_size):
         # Each array contains the indices of the element of the validation and the train and test sets.
@@ -100,7 +101,7 @@ class FileSplitter:
             for filename in os.listdir(in_path):
                 marmot_images.append(filename)
             for i in self.test_set:
-                out.write(in_path + '/' + str(marmot_images[i])  + '\n')
+                out.write(in_path + '/' + str(marmot_images[i]) + '\n')
         out.close()
         return self.test_set
 
