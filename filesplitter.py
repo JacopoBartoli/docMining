@@ -84,6 +84,7 @@ class FileSplitter:
     # Create the .txt file that contains the name of the test files.
     # in_path: path where the image files can be found.
     # out_path: path where the .txt should be saved.
+    # in_path refers to the path that image will have when used by the darknet script. Need to adjust this name.
     def get_test(self, dataset, in_path, out_path):
         out = open(out_path, "w+")
         if dataset == 'icdar':

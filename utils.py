@@ -255,10 +255,10 @@ def convert_icdar(in_annotations_dir, in_image_dir, out_annotations_dir, out_ima
         # Storing the corresponding image to the file.
         img_filename = in_image_dir + '/' + filename.replace('.xml', '.bmp')
         img = Image.open(img_filename)
+        out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
         for child in root:
             if child.tag == 'tableRegion':
                 # Create the file only if there is a tableRegion object.
-                out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
                 for item in child:
                     if item.tag == 'Coords':
                         img_width, img_height = img.size
@@ -271,7 +271,7 @@ def convert_icdar(in_annotations_dir, in_image_dir, out_annotations_dir, out_ima
                         out_annotation.write(str(normalized_box.y_center) + ' ')
                         out_annotation.write(str(normalized_box.width) + ' ')
                         out_annotation.write(str(normalized_box.height) + '\n')
-                    out_annotation.close()
+        out_annotation.close()
         # Create new image files and save them in the right directory, and in the right format(.jpg)
         img.save(out_image_dir + '/' + filename.replace('.xml', '.jpg'))
 
@@ -330,11 +330,14 @@ if __name__ == '__main__':
     fs.split()
     # Generate the file that contains the list of the train, validation and test sets.
     # Input images in '../icdar/images', save the icdar_train.txt in the dataset folder.
-    fs.get_train('icdar', './Dataset/icdar/images', './Dataset/icdar_train.txt')
+    #fs.get_train('icdar', '../Dataset/icdar/images', './Dataset/icdar_train.txt')
+    fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_train.txt')
     # Input images in '../icdar/images', save the icdar_valid.txt in the dataset folder.
-    fs.get_valid('icdar', './Dataset/icdar/images', './Dataset/icdar_valid.txt')
+    fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_valid.txt')
+    #fs.get_valid('icdar', '../Dataset/icdar/images', './Dataset/icdar_valid.txt')
     # Input images in './Dataset/icdar/images', save the icdar_test.txt in the dataset folder.
-    fs.get_test('icdar', './Dataset/icdar/images', './Dataset/icdar_test.txt')
+    fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_test.txt')
+    #fs.get_test('icdar', '../Dataset/icdar/images', './Dataset/icdar_test.txt')
 
     # OPTIONAL: right know don't use these functions.
     # Transform the image in the dataset.
