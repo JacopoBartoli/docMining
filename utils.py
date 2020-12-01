@@ -247,7 +247,6 @@ def convert_icdar(in_annotations_dir, in_image_dir, out_annotations_dir, out_ima
     file = open(classes_dir, 'w+')
     file.write('tableRegion')
     file.close()
-
     # Explore the directory.
     for filename in os.listdir(in_annotations_dir):
         tree = Et.parse(in_annotations_dir + '/' + filename)
@@ -263,7 +262,6 @@ def convert_icdar(in_annotations_dir, in_image_dir, out_annotations_dir, out_ima
                     if item.tag == 'Coords':
                         img_width, img_height = img.size
                         normalized_box = calc_box(item, img_width, img_height)
-
                         # Insert the item in the annotation files and save them in the right directory,
                         # and in the right format(.txt).
                         out_annotation.write(str(1) + ' ')
@@ -274,6 +272,7 @@ def convert_icdar(in_annotations_dir, in_image_dir, out_annotations_dir, out_ima
         out_annotation.close()
         # Create new image files and save them in the right directory, and in the right format(.jpg)
         img.save(out_image_dir + '/' + filename.replace('.xml', '.jpg'))
+
 
 
 # !!!Probably this will not be used.
@@ -314,9 +313,34 @@ def deleteXmlFromImages():
         if st.endswith('.xml'):
             os.remove(dir + "/" + filename)
 
+# Calc min and max size (height and width for datasets)
+def calcMinMaxSize(img_dir):
+    sizes = []
+    for filename in os.listdir(img_dir):
+        img = Image.open(img_dir + "/" + filename)
+        sizes.append(img.size)
+    minimum=sizes[0]
+    minArea=sizes[0][0]*sizes[0][1]
+    for size in sizes:
+        if((size[0]*size[1])<minArea):
+            minimum = size
+            minArea = (size[0]*size[1])
+    print('min ', minimum, 'minArea', minArea)
+    max=sizes[0]
+    maxArea=sizes[0][0]*sizes[0][1]
+    for size in sizes:
+        if((size[0]*size[1])>maxArea):
+            max = size
+            maxArea = (size[0]*size[1])
+    print('max ', max, 'maxArea', maxArea)
+
+
+
 
 if __name__ == '__main__':
 
+    #calcMinMaxSize("./Dataset/icdar/images")
+    #calcMinMaxSize("./Dataset/marmot/images")
     # deleteXmlFromImages()
     # Convert the icdar dataset.
     # deleteXmlFromImages()
@@ -330,14 +354,14 @@ if __name__ == '__main__':
     fs.split()
     # Generate the file that contains the list of the train, validation and test sets.
     # Input images in '../icdar/images', save the icdar_train.txt in the dataset folder.
-    #fs.get_train('icdar', '../Dataset/icdar/images', './Dataset/icdar_train.txt')
-    fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_train.txt')
+    fs.get_train('icdar', '../Dataset/icdar/images', './Dataset/icdar_train.txt')
+    #fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_train.txt')
     # Input images in '../icdar/images', save the icdar_valid.txt in the dataset folder.
-    fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_valid.txt')
-    #fs.get_valid('icdar', '../Dataset/icdar/images', './Dataset/icdar_valid.txt')
+    #fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_valid.txt')
+    fs.get_valid('icdar', '../Dataset/icdar/images', './Dataset/icdar_valid.txt')
     # Input images in './Dataset/icdar/images', save the icdar_test.txt in the dataset folder.
-    fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_test.txt')
-    #fs.get_test('icdar', '../Dataset/icdar/images', './Dataset/icdar_test.txt')
+    #fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_test.txt')
+    fs.get_test('icdar', '../Dataset/icdar/images', './Dataset/icdar_test.txt')
 
     # OPTIONAL: right know don't use these functions.
     # Transform the image in the dataset.
