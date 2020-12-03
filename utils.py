@@ -19,8 +19,8 @@ def create_rectangle(points, img_width=1, img_height=1):
     width = points[1][0] - points[0][0]
     height = points[2][1] - points[0][1]
 
-    x_center = (points[1][0] - points[0][0]) / 2.0
-    y_center = (points[2][1] - points[0][1]) / 2.0
+    x_center = points[0][0] + width / 2.0
+    y_center = points[0][1] + height / 2.0
 
     return Rectangle(width / img_width, height / img_height, x_center / img_width, y_center / img_height)
 
