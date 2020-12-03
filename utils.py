@@ -211,7 +211,6 @@ def convert_marmot(in_annotations_dir, in_image_dir, out_annotations_dir, out_im
     file = open(classes_dir, 'w+')
     file.write('tableRegion')
     file.close()
-
     for filename in os.listdir(in_annotations_dir):
         tree = Et.parse(in_annotations_dir + '/' + filename)
         root = tree.getroot()
@@ -351,17 +350,21 @@ if __name__ == '__main__':
     # Generate test, validation and test sets for icdar.
     # Split the file randomly.
     fs = FileSplitter(1600)
-    fs.split()
+    #fs.split()
+    fs.splitInPercentage('icdar')
     # Generate the file that contains the list of the train, validation and test sets.
     # Input images in '../icdar/images', save the icdar_train.txt in the dataset folder.
-    fs.get_train('icdar', '../Dataset/icdar/images', './Dataset/icdar_train.txt')
+    #fs.get_train('icdar', '../Dataset/icdar/images', './Dataset/icdar_train.txt')
+    fs.get_trainInPercentage('../Dataset/icdar/images', './Dataset/icdar_train.txt')
     #fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_train.txt')
     # Input images in '../icdar/images', save the icdar_valid.txt in the dataset folder.
     #fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_valid.txt')
-    fs.get_valid('icdar', '../Dataset/icdar/images', './Dataset/icdar_valid.txt')
+    #fs.get_valid('icdar', '../Dataset/icdar/images', './Dataset/icdar_valid.txt')
+    fs.get_validInPercentage('../Dataset/icdar/images', './Dataset/icdar_valid.txt')
     # Input images in './Dataset/icdar/images', save the icdar_test.txt in the dataset folder.
     #fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_test.txt')
-    fs.get_test('icdar', '../Dataset/icdar/images', './Dataset/icdar_test.txt')
+    #fs.get_test('icdar', '../Dataset/icdar/images', './Dataset/icdar_test.txt')
+    fs.get_testInPercentage('../Dataset/icdar/images', './Dataset/icdar_test.txt')
 
     # OPTIONAL: right know don't use these functions.
     # Transform the image in the dataset.
@@ -372,11 +375,15 @@ if __name__ == '__main__':
                    "./Dataset/marmot/labels", "./Dataset/marmot/images", "./Dataset/marmot.names")
 
     fs = FileSplitter(993)
-    fs.split()
+    #fs.split()
+    fs.splitInPercentage('marmot')
     # Generate the file that contains the list of the train, validation and test sets.
     # Input images in '../marmot/images', save the marmot_train.txt in the dataset folder.
-    fs.get_train('marmot', './Dataset/marmot/images', './Dataset/marmot_train.txt')
+    #fs.get_train('marmot', './Dataset/marmot/images', './Dataset/marmot_train.txt')
+    fs.get_trainInPercentage( './Dataset/marmot/images', './Dataset/marmot_train.txt')
     # Input images in '../marmot/images', save the marmot_valid.txt in the dataset folder.
-    fs.get_valid('marmot', './Dataset/marmot/images', './Dataset/marmot_valid.txt')
+    #fs.get_valid('marmot', './Dataset/marmot/images', './Dataset/marmot_valid.txt')
+    fs.get_validInPercentage('./Dataset/marmot/images', './Dataset/marmot_valid.txt')
     # Input images in '../marmot/images', save the marmot_test.txt in the dataset folder.
-    fs.get_test('marmot', './Dataset/marmot/images', './Dataset/marmot_test.txt')
+    #fs.get_test('marmot', './Dataset/marmot/images', './Dataset/marmot_test.txt')
+    fs.get_testInPercentage('./Dataset/marmot/images', './Dataset/marmot_test.txt')
