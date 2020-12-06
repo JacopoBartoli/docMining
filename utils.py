@@ -229,7 +229,7 @@ def convert_marmot(in_annotations_dir, in_image_dir, out_annotations_dir, out_im
                         normalized_box = calc_box_marmot(box_converted, img_width, img_height)
                         # Insert the item in the annotation files and save them in the right directory,
                         # and in the right format(.txt).
-                        out_annotation.write('1 ')
+                        out_annotation.write('0 ')
                         out_annotation.write(str(normalized_box.x_center) + ' ')
                         out_annotation.write(str(normalized_box.y_center) + ' ')
                         out_annotation.write(str(normalized_box.width) + ' ')
@@ -263,7 +263,7 @@ def convert_icdar(in_annotations_dir, in_image_dir, out_annotations_dir, out_ima
                         normalized_box = calc_box(item, img_width, img_height)
                         # Insert the item in the annotation files and save them in the right directory,
                         # and in the right format(.txt).
-                        out_annotation.write(str(1) + ' ')
+                        out_annotation.write(str(0) + ' ')
                         out_annotation.write(str(normalized_box.x_center) + ' ')
                         out_annotation.write(str(normalized_box.y_center) + ' ')
                         out_annotation.write(str(normalized_box.width) + ' ')
@@ -350,21 +350,21 @@ if __name__ == '__main__':
     # Generate test, validation and test sets for icdar.
     # Split the file randomly.
     fs = FileSplitter(1600)
-    #fs.split()
-    fs.splitInPercentage('icdar')
+    fs.split()
+    #fs.splitInPercentage('icdar')
     # Generate the file that contains the list of the train, validation and test sets.
     # Input images in '../icdar/images', save the icdar_train.txt in the dataset folder.
-    #fs.get_train('icdar', '../Dataset/icdar/images', './Dataset/icdar_train.txt')
-    fs.get_trainInPercentage('../Dataset/icdar/images', './Dataset/icdar_train.txt')
+    fs.get_train('icdar', '/content/darknet/data/icdar', './Dataset/icdar_train.txt')
+    #fs.get_trainInPercentage('../Dataset/icdar/images', './Dataset/icdar_train.txt')
     #fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_train.txt')
     # Input images in '../icdar/images', save the icdar_valid.txt in the dataset folder.
     #fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_valid.txt')
-    #fs.get_valid('icdar', '../Dataset/icdar/images', './Dataset/icdar_valid.txt')
-    fs.get_validInPercentage('../Dataset/icdar/images', './Dataset/icdar_valid.txt')
+    fs.get_valid('icdar', '/content/darknet/data/icdar', './Dataset/icdar_valid.txt')
+    #fs.get_validInPercentage('../Dataset/icdar/images', './Dataset/icdar_valid.txt')
     # Input images in './Dataset/icdar/images', save the icdar_test.txt in the dataset folder.
     #fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_test.txt')
-    #fs.get_test('icdar', '../Dataset/icdar/images', './Dataset/icdar_test.txt')
-    fs.get_testInPercentage('../Dataset/icdar/images', './Dataset/icdar_test.txt')
+    fs.get_test('icdar', '/content/darknet/data/icdar', './Dataset/icdar_test.txt')
+    #fs.get_testInPercentage('../Dataset/icdar/images', './Dataset/icdar_test.txt')
 
     # OPTIONAL: right know don't use these functions.
     # Transform the image in the dataset.
@@ -375,15 +375,15 @@ if __name__ == '__main__':
                    "./Dataset/marmot/labels", "./Dataset/marmot/images", "./Dataset/marmot.names")
 
     fs = FileSplitter(993)
-    #fs.split()
-    fs.splitInPercentage('marmot')
+    fs.split()
+    #fs.splitInPercentage('marmot')
     # Generate the file that contains the list of the train, validation and test sets.
     # Input images in '../marmot/images', save the marmot_train.txt in the dataset folder.
-    #fs.get_train('marmot', './Dataset/marmot/images', './Dataset/marmot_train.txt')
-    fs.get_trainInPercentage( './Dataset/marmot/images', './Dataset/marmot_train.txt')
+    fs.get_train('marmot', '/content/darknet/data/marmot', './Dataset/marmot_train.txt')
+    #fs.get_trainInPercentage( '/content/darknet/data/icdar', './Dataset/marmot_train.txt')
     # Input images in '../marmot/images', save the marmot_valid.txt in the dataset folder.
-    #fs.get_valid('marmot', './Dataset/marmot/images', './Dataset/marmot_valid.txt')
-    fs.get_validInPercentage('./Dataset/marmot/images', './Dataset/marmot_valid.txt')
+    fs.get_valid('marmot', '/content/darknet/data/marmot', './Dataset/marmot_valid.txt')
+    #fs.get_validInPercentage('./Dataset/marmot/images', './Dataset/marmot_valid.txt')
     # Input images in '../marmot/images', save the marmot_test.txt in the dataset folder.
-    #fs.get_test('marmot', './Dataset/marmot/images', './Dataset/marmot_test.txt')
-    fs.get_testInPercentage('./Dataset/marmot/images', './Dataset/marmot_test.txt')
+    fs.get_test('marmot', '/content/darknet/data/marmot', './Dataset/marmot_test.txt')
+    #fs.get_testInPercentage('./Dataset/marmot/images', './Dataset/marmot_test.txt')

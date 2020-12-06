@@ -142,7 +142,7 @@ class FileSplitter:
 
         elif dataset == 'marmot':
             marmot_images = []
-            for filename in os.listdir(in_path):
+            for filename in os.listdir("./Dataset/marmot/images"):
                 marmot_images.append(filename)
             for i in self.train_set:
                 out.write(in_path + '/' + str(marmot_images[i]) + '\n')
@@ -178,7 +178,7 @@ class FileSplitter:
                     out.write(in_path+'/POD_000' + str(i) + '.jpg' + '\n')
         elif dataset == 'marmot':
             marmot_images = []
-            for filename in os.listdir(in_path):
+            for filename in os.listdir("./Dataset/marmot/images"):
                 marmot_images.append(filename)
             for i in self.valid_set:
                 out.write(in_path + '/' + str(marmot_images[i])  + '\n')
@@ -214,7 +214,7 @@ class FileSplitter:
                     out.write(in_path+'/POD_000' + str(i) + '.jpg' + '\n')
         elif dataset == 'marmot':
             marmot_images = []
-            for filename in os.listdir(in_path):
+            for filename in os.listdir("./Dataset/marmot/images"):
                 marmot_images.append(filename)
             for i in self.test_set:
                 out.write(in_path + '/' + str(marmot_images[i]) + '\n')
