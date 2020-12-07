@@ -239,7 +239,7 @@ def convert_marmot(in_annotations_dir, in_image_dir, out_annotations_dir, out_im
                     out_annotation.close()
             if (found == False):
                 out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
-                out_annotation.write('0 ')
+                out_annotation.write('')
                 out_annotation.close()
 
 
