@@ -218,9 +218,11 @@ def convert_marmot(in_annotations_dir, in_image_dir, out_annotations_dir, out_im
         img_filename = in_image_dir+'/' + filename.replace('.xml', '.bmp')
         img = Image.open(img_filename)
         for child in root:
+            found = False
             for item in child:
                 st = str(item.attrib)
                 if st == "{'Label': 'Table'}":
+                    found = True
                     out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
                     for last in item:
                         img_width,  img_height = img.size
@@ -235,6 +237,12 @@ def convert_marmot(in_annotations_dir, in_image_dir, out_annotations_dir, out_im
                         out_annotation.write(str(normalized_box.width) + ' ')
                         out_annotation.write(str(normalized_box.height) + '\n')
                     out_annotation.close()
+            if (found == False):
+                out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
+                out_annotation.write('0 ')
+                out_annotation.close()
+
+
         # Create new image files and save them in the right directory, and in the right format(.jpg)
         img.save(out_image_dir + '/' + filename.replace('.xml', '.jpg'))
 

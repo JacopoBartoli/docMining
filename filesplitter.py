@@ -27,14 +27,26 @@ class FileSplitter:
             # Generate and insert the elements in the test set.
             for i in range(0, test_size):
                 rand = np.random.random_integers(0, self.dataset_size-1)
-                if rand not in self.train_set:
-                    self.test_set.append(rand)
+                while rand not in self.train_set:
+                    rand = np.random.random_integers(0, self.dataset_size - 1)
+                self.test_set.append(rand)
+
+
 
             # Generate and insert the elements in the validation set.
             for i in range(0, valid_size):
-                rand = np.random.random_integers(0, self.dataset_size-1)
-                if (rand not in self.train_set) and (rand not in self.test_set):
-                    self.valid_set.append(rand)
+                rand = np.random.random_integers(0, self.dataset_size - 1)
+                while (rand not in self.train_set) and (rand not in self.test_set):
+                    rand = np.random.random_integers(0, self.dataset_size - 1)
+                self.valid_set.append(rand)
+
+            #all name marmot in a list
+            self.marmot_images = []
+            for filename in os.listdir("./Dataset/marmot/images"):
+                self.marmot_images.append(filename)
+
+
+
 
     #Divide randomly dataset with percentage with or without table
     def splitInPercentage(self,  dataset, train_percentage=80, test_percentage=10):
@@ -139,13 +151,9 @@ class FileSplitter:
                     out.write(in_path+'/POD_00' + str(i) + '.jpg' + '\n')
                 elif i < 10:
                     out.write(in_path+'/POD_000' + str(i) + '.jpg' + '\n')
-
         elif dataset == 'marmot':
-            marmot_images = []
-            for filename in os.listdir("./Dataset/marmot/images"):
-                marmot_images.append(filename)
             for i in self.train_set:
-                out.write(in_path + '/' + str(marmot_images[i]) + '\n')
+                out.write(in_path + '/' + str(self.marmot_images[i]) + '\n')
         out.close()
         return self.train_set
 
@@ -169,19 +177,16 @@ class FileSplitter:
         if dataset == 'icdar':
             for i in self.valid_set:
                 if i >= 1000:
-                    out.write(in_path+'/POD_' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_' + str(i) + '.jpg' + '\n')
                 elif i >= 100:
-                    out.write(in_path+'/POD_0' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_0' + str(i) + '.jpg' + '\n')
                 elif i >= 10:
-                    out.write(in_path+'/POD_00' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_00' + str(i) + '.jpg' + '\n')
                 elif i < 10:
-                    out.write(in_path+'/POD_000' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_000' + str(i) + '.jpg' + '\n')
         elif dataset == 'marmot':
-            marmot_images = []
-            for filename in os.listdir("./Dataset/marmot/images"):
-                marmot_images.append(filename)
             for i in self.valid_set:
-                out.write(in_path + '/' + str(marmot_images[i])  + '\n')
+                out.write(in_path + '/' + str(self.marmot_images[i]) + '\n')
         out.close()
         return self.valid_set
 
@@ -205,19 +210,16 @@ class FileSplitter:
         if dataset == 'icdar':
             for i in self.test_set:
                 if i >= 1000:
-                    out.write(in_path+'/POD_' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_' + str(i) + '.jpg' + '\n')
                 elif i >= 100:
-                    out.write(in_path+'/POD_0' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_0' + str(i) + '.jpg' + '\n')
                 elif i >= 10:
-                    out.write(in_path+'/POD_00' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_00' + str(i) + '.jpg' + '\n')
                 elif i < 10:
-                    out.write(in_path+'/POD_000' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_000' + str(i) + '.jpg' + '\n')
         elif dataset == 'marmot':
-            marmot_images = []
-            for filename in os.listdir("./Dataset/marmot/images"):
-                marmot_images.append(filename)
             for i in self.test_set:
-                out.write(in_path + '/' + str(marmot_images[i]) + '\n')
+                out.write(in_path + '/' + str(self.marmot_images[i]) + '\n')
         out.close()
         return self.test_set
 
