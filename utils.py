@@ -163,16 +163,13 @@ def save_classes(classes, path):
     file.close()
 
 
-def convert_marmot(in_annotations_dir, in_image_dir, out_annotations_dir, out_image_dir, classes_dir):
+def convert_marmot(in_annotations_dir, in_image_dir, out_dir):
     # Create the.names file
-    file = open(classes_dir, 'w+')
-    file.write('tableRegion')
-    file.close()
     for filename in os.listdir(in_annotations_dir):
         tree = Et.parse(in_annotations_dir + '/' + filename)
         root = tree.getroot()
         # Storing the corresponding image to the file.
-        img_filename = in_image_dir+'/' + filename.replace('.xml', '.bmp')
+        img_filename = in_image_dir + '/' + filename.replace('.xml', '.bmp')
         img = Image.open(img_filename)
         for child in root:
             found = False
@@ -180,9 +177,9 @@ def convert_marmot(in_annotations_dir, in_image_dir, out_annotations_dir, out_im
                 st = str(item.attrib)
                 if st == "{'Label': 'Table'}":
                     found = True
-                    out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
+                    out_annotation = open(out_dir + '/' + filename.replace('.xml', '.txt'), "w+")
                     for last in item:
-                        img_width,  img_height = img.size
+                        img_width, img_height = img.size
                         coord = str(last.attrib)
                         box_converted = convert_to_decimal(coord, img_height)
                         normalized_box = calc_box_marmot(box_converted, img_width, img_height)
@@ -194,23 +191,19 @@ def convert_marmot(in_annotations_dir, in_image_dir, out_annotations_dir, out_im
                         out_annotation.write(str(normalized_box.width) + ' ')
                         out_annotation.write(str(normalized_box.height) + '\n')
                     out_annotation.close()
-            if (found == False):
-                out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
+            if not found:
+                out_annotation = open(out_dir + '/' + filename.replace('.xml', '.txt'), "w+")
                 out_annotation.write('')
                 out_annotation.close()
 
-
         # Create new image files and save them in the right directory, and in the right format(.jpg)
-        img.save(out_image_dir + '/' + filename.replace('.xml', '.jpg'))
+        img.save(out_dir + '/' + filename.replace('.xml', '.jpg'))
 
 
 # Convert the ICDAR 2017 POD dataset into the darknet format.
-def convert_icdar(in_annotations_dir, in_image_dir, out_annotations_dir, out_image_dir, classes_dir):
+def convert_icdar(in_annotations_dir, in_image_dir, out_dir):
     # Binary class representation.
     # Create the.names file
-    file = open(classes_dir, 'w+')
-    file.write('tableRegion')
-    file.close()
     # Explore the directory.
     for filename in os.listdir(in_annotations_dir):
         tree = Et.parse(in_annotations_dir + '/' + filename)
@@ -218,7 +211,7 @@ def convert_icdar(in_annotations_dir, in_image_dir, out_annotations_dir, out_ima
         # Storing the corresponding image to the file.
         img_filename = in_image_dir + '/' + filename.replace('.xml', '.bmp')
         img = Image.open(img_filename)
-        out_annotation = open(out_annotations_dir + '/' + filename.replace('.xml', '.txt'), "w+")
+        out_annotation = open(out_dir + '/' + filename.replace('.xml', '.txt'), "w+")
         for child in root:
             if child.tag == 'tableRegion':
                 # Create the file only if there is a tableRegion object.
@@ -235,8 +228,7 @@ def convert_icdar(in_annotations_dir, in_image_dir, out_annotations_dir, out_ima
                         out_annotation.write(str(normalized_box.height) + '\n')
         out_annotation.close()
         # Create new image files and save them in the right directory, and in the right format(.jpg)
-        img.save(out_image_dir + '/' + filename.replace('.xml', '.jpg'))
-
+        img.save(out_dir + '/' + filename.replace('.xml', '.jpg'))
 
 
 # !!!Probably this will not be used.
@@ -270,66 +262,56 @@ def transform_test_set(input_dir, output_dir):
 
 
 # Delete the xml files into folder images of original marmot dataset.
-def deleteXmlFromImages():
+def delete_xml_from_images():
     dir = './Dataset/marmot_original/images'
     for filename in os.listdir(dir):
         st = str(filename)
         if st.endswith('.xml'):
             os.remove(dir + "/" + filename)
 
+
 # Calc min and max size (height and width for datasets)
-def calcMinMaxSize(img_dir):
+def calc_min_max_size(img_dir):
     sizes = []
     for filename in os.listdir(img_dir):
         img = Image.open(img_dir + "/" + filename)
         sizes.append(img.size)
-    minimum=sizes[0]
-    minArea=sizes[0][0]*sizes[0][1]
+    minimum = sizes[0]
+    min_area = sizes[0][0] * sizes[0][1]
     for size in sizes:
-        if((size[0]*size[1])<minArea):
+        if (size[0] * size[1]) < min_area:
             minimum = size
-            minArea = (size[0]*size[1])
-    print('min ', minimum, 'minArea', minArea)
-    max=sizes[0]
-    maxArea=sizes[0][0]*sizes[0][1]
+            min_area = (size[0] * size[1])
+    print('min ', minimum, 'minArea', min_area)
+    max = sizes[0]
+    max_area = sizes[0][0] * sizes[0][1]
     for size in sizes:
-        if((size[0]*size[1])>maxArea):
+        if (size[0] * size[1]) > max_area:
             max = size
-            maxArea = (size[0]*size[1])
-    print('max ', max, 'maxArea', maxArea)
-
-
+            max_area = (size[0] * size[1])
+    print('max ', max, 'maxArea', max_area)
 
 
 if __name__ == '__main__':
-
-    #calcMinMaxSize("./Dataset/icdar/images")
-    #calcMinMaxSize("./Dataset/marmot/images")
-    # deleteXmlFromImages()
     # Convert the icdar dataset.
-    # deleteXmlFromImages()
 
-    convert_icdar("./Dataset/icdar_2017/Annotations", "./Dataset/icdar_2017/Images", "./Dataset/icdar/labels",
-                  "./Dataset/icdar/images", "./Dataset/icdar.names")
+    convert_icdar("./Dataset/icdar_2017/Annotations", "./Dataset/icdar_2017/Images", "./Dataset/icdar/")
 
     # Generate test, validation and test sets for icdar.
     # Split the file randomly.
     fs = FileSplitter(1600)
     fs.split()
-    #fs.splitInPercentage('icdar')
+    # fs.splitInPercentage('icdar')
     # Generate the file that contains the list of the train, validation and test sets.
     # Input images in '../icdar/images', save the icdar_train.txt in the dataset folder.
     fs.get_train('icdar', '/content/darknet/data/icdar', './Dataset/icdar_train.txt')
-    #fs.get_trainInPercentage('../Dataset/icdar/images', './Dataset/icdar_train.txt')
-    #fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_train.txt')
+    # fs.get_trainInPercentage('../Dataset/icdar/images', './Dataset/icdar_train.txt')
     # Input images in '../icdar/images', save the icdar_valid.txt in the dataset folder.
-    #fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_valid.txt')
     fs.get_valid('icdar', '/content/darknet/data/icdar', './Dataset/icdar_valid.txt')
-    #fs.get_validInPercentage('../Dataset/icdar/images', './Dataset/icdar_valid.txt')
+    # fs.get_validInPercentage('../Dataset/icdar/images', './Dataset/icdar_valid.txt')
     # Input images in './Dataset/icdar/images', save the icdar_test.txt in the dataset folder.
-    #fs.get_train('icdar', '/content/gdrive/MyDrive/dataset/icdar', './Dataset/icdar_test.txt')
     fs.get_test('icdar', '/content/darknet/data/icdar', './Dataset/icdar_test.txt')
-    #fs.get_testInPercentage('../Dataset/icdar/images', './Dataset/icdar_test.txt')
+    # fs.get_testInPercentage('../Dataset/icdar/images', './Dataset/icdar_test.txt')
 
     # OPTIONAL: right know don't use these functions.
     # Transform the image in the dataset.
@@ -337,18 +319,18 @@ if __name__ == '__main__':
 
     # Convert the marmot dataset.
     convert_marmot("./Dataset/marmot_original/labels", "./Dataset/marmot_original/images",
-                   "./Dataset/marmot/labels", "./Dataset/marmot/images", "./Dataset/marmot.names")
+                   "./Dataset/marmot")
 
     fs = FileSplitter(993)
     fs.split()
-    #fs.splitInPercentage('marmot')
+    # fs.splitInPercentage('marmot')
     # Generate the file that contains the list of the train, validation and test sets.
     # Input images in '../marmot/images', save the marmot_train.txt in the dataset folder.
     fs.get_train('marmot', '/content/darknet/data/marmot', './Dataset/marmot_train.txt')
-    #fs.get_trainInPercentage( '/content/darknet/data/icdar', './Dataset/marmot_train.txt')
+    # fs.get_trainInPercentage( '/content/darknet/data/icdar', './Dataset/marmot_train.txt')
     # Input images in '../marmot/images', save the marmot_valid.txt in the dataset folder.
     fs.get_valid('marmot', '/content/darknet/data/marmot', './Dataset/marmot_valid.txt')
-    #fs.get_validInPercentage('./Dataset/marmot/images', './Dataset/marmot_valid.txt')
+    # fs.get_validInPercentage('./Dataset/marmot/images', './Dataset/marmot_valid.txt')
     # Input images in '../marmot/images', save the marmot_test.txt in the dataset folder.
     fs.get_test('marmot', '/content/darknet/data/marmot', './Dataset/marmot_test.txt')
-    #fs.get_testInPercentage('./Dataset/marmot/images', './Dataset/marmot_test.txt')
+    # fs.get_testInPercentage('./Dataset/marmot/images', './Dataset/marmot_test.txt')

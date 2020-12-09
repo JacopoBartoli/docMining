@@ -2,54 +2,52 @@ import numpy as np
 import os
 import xml.etree.ElementTree as Et
 
+
 class FileSplitter:
     def __init__(self, dataset_size):
         # Each array contains the indices of the element of the validation and the train and test sets.
         self.train_set = []
         self.valid_set = []
         self.test_set = []
+
+        # Need to adjust this item, don't like this way.
+        self.marmot_images = []
         # Number of element contained in the dataset.
         self.dataset_size = dataset_size
 
     # Divide randomly the dataset
-    def split(self,  train_percentage=80, test_percentage=10):
+    def split(self, train_percentage=80, test_percentage=10):
 
-            # Generate randomly the validation, test and train sets.
-            # Generate sizes of the sets. Right now the percentages are T-V-T80-10-10.
-            train_size = int((self.dataset_size*train_percentage)/100)
-            test_size = int((self.dataset_size*test_percentage)/100)
-            valid_size = self.dataset_size-train_size-test_size
-            # Generate randomly the train
+        # Generate randomly the validation, test and train sets.
+        # Generate sizes of the sets. Right now the percentages are T-V-T80-10-10.
+        train_size = int((self.dataset_size * train_percentage) / 100)
+        test_size = int((self.dataset_size * test_percentage) / 100)
+        valid_size = self.dataset_size - train_size - test_size
+        # Generate randomly the train
 
-            self.train_set = np.random.random_integers(0, self.dataset_size - 1, size=int(train_size))
-            #self.train_set = np.random.random_integers(0, self.dataset_size-1, size=int(train_size))
+        self.train_set = np.random.random_integers(0, self.dataset_size - 1, size=int(train_size))
+        # self.train_set = np.random.random_integers(0, self.dataset_size-1, size=int(train_size))
 
-            # Generate and insert the elements in the test set.
-            for i in range(0, test_size):
-                rand = np.random.random_integers(0, self.dataset_size-1)
-                while rand not in self.train_set:
-                    rand = np.random.random_integers(0, self.dataset_size - 1)
-                self.test_set.append(rand)
-
-
-
-            # Generate and insert the elements in the validation set.
-            for i in range(0, valid_size):
+        # Generate and insert the elements in the test set.
+        for i in range(0, test_size):
+            rand = np.random.random_integers(0, self.dataset_size - 1)
+            while rand not in self.train_set:
                 rand = np.random.random_integers(0, self.dataset_size - 1)
-                while (rand not in self.train_set) and (rand not in self.test_set):
-                    rand = np.random.random_integers(0, self.dataset_size - 1)
-                self.valid_set.append(rand)
+            self.test_set.append(rand)
 
-            #all name marmot in a list
-            self.marmot_images = []
-            for filename in os.listdir("./Dataset/marmot/images"):
-                self.marmot_images.append(filename)
+        # Generate and insert the elements in the validation set.
+        for i in range(0, valid_size):
+            rand = np.random.random_integers(0, self.dataset_size - 1)
+            while (rand not in self.train_set) and (rand not in self.test_set):
+                rand = np.random.random_integers(0, self.dataset_size - 1)
+            self.valid_set.append(rand)
 
+        # all name marmot in a list
+        for filename in os.listdir("./Dataset/marmot_original/images"):
+            self.marmot_images.append(filename)
 
-
-
-    #Divide randomly dataset with percentage with or without table
-    def splitInPercentage(self,  dataset, train_percentage=80, test_percentage=10):
+    # Divide randomly dataset with percentage with or without table
+    def splitInPercentage(self, dataset, train_percentage=80, test_percentage=10):
 
         train_size = int((self.dataset_size * train_percentage) / 100)
         test_size = int((self.dataset_size * test_percentage) / 100)
@@ -77,7 +75,7 @@ class FileSplitter:
                 if (isTable == True):
                     allTable.append(filename.replace('.xml', '.txt'))
                 elif (isTable == False):
-                    allNoTAble.append(filename.replace('.xml','.txt'))
+                    allNoTAble.append(filename.replace('.xml', '.txt'))
         elif dataset == 'marmot':
             percentageTable = 49
             percentageNoTable = 51
@@ -102,7 +100,6 @@ class FileSplitter:
         validTableSize = int((valid_size * percentageTable) / 100)
         validNoTableSize = int((valid_size * percentageNoTable) / 100)
 
-
         np.random.shuffle(allTable)
         np.random.shuffle(allNoTAble)
 
@@ -114,9 +111,9 @@ class FileSplitter:
 
         # Create two valid set, one with tables and one without tables
         for i in range(0, validTableSize):
-                validTable.append(allTable.pop(0))
+            validTable.append(allTable.pop(0))
         for i in range(0, validNoTableSize):
-                 validNoTable.append(allNoTAble.pop(0))
+            validNoTable.append(allNoTAble.pop(0))
 
         # Create the test set with the remaining data
         self.test_set = []
@@ -134,8 +131,6 @@ class FileSplitter:
         np.random.shuffle(self.valid_set)
         np.random.shuffle(self.test_set)
 
-
-
     # Create the .txt file that contains the name of the train files.
     # in_path: path where the image files can be found.
     # out_path: path where the .txt should be saved.
@@ -144,13 +139,13 @@ class FileSplitter:
         if dataset == 'icdar':
             for i in self.train_set:
                 if i >= 1000:
-                    out.write(in_path+'/POD_' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_' + str(i) + '.jpg' + '\n')
                 elif i >= 100:
-                    out.write(in_path+'/POD_0' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_0' + str(i) + '.jpg' + '\n')
                 elif i >= 10:
-                    out.write(in_path+'/POD_00' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_00' + str(i) + '.jpg' + '\n')
                 elif i < 10:
-                    out.write(in_path+'/POD_000' + str(i) + '.jpg' + '\n')
+                    out.write(in_path + '/POD_000' + str(i) + '.jpg' + '\n')
         elif dataset == 'marmot':
             for i in self.train_set:
                 out.write(in_path + '/' + str(self.marmot_images[i]) + '\n')
@@ -160,14 +155,15 @@ class FileSplitter:
         # Create the .txt file that contains the name of the train files.
         # in_path: path where the image files can be found.
         # out_path: path where the .txt should be saved.
+
     def get_trainInPercentage(self, in_path, out_path):
-            out = open(out_path, "w+")
-            for i in self.train_set:
-                i = str(i)
-                i = i.replace('.txt', '.jpg')
-                out.write(in_path + '/' + i + '\n')
-            out.close()
-            return self.train_set
+        out = open(out_path, "w+")
+        for i in self.train_set:
+            i = str(i)
+            i = i.replace('.txt', '.jpg')
+            out.write(in_path + '/' + i + '\n')
+        out.close()
+        return self.train_set
 
     # Create the .txt file that contains the name of the validation files.
     # in_path: path where the image files can be found.
@@ -190,16 +186,14 @@ class FileSplitter:
         out.close()
         return self.valid_set
 
-
-    def get_validInPercentage(self, in_path, out_path):
-            out = open(out_path, "w+")
-            for i in self.valid_set:
-                i = str(i)
-                i = i.replace('.txt', '.jpg')
-                out.write(in_path + '/' + i + '\n')
-            out.close()
-            return self.valid_set
-
+    def get_valid_percentage(self, in_path, out_path):
+        out = open(out_path, "w+")
+        for i in self.valid_set:
+            i = str(i)
+            i = i.replace('.txt', '.jpg')
+            out.write(in_path + '/' + i + '\n')
+        out.close()
+        return self.valid_set
 
     # Create the .txt file that contains the name of the test files.
     # in_path: path where the image files can be found.
@@ -223,8 +217,7 @@ class FileSplitter:
         out.close()
         return self.test_set
 
-
-    def get_testInPercentage(self, in_path, out_path):
+    def get_test_percentage(self, in_path, out_path):
         out = open(out_path, "w+")
         for i in self.test_set:
             i = str(i)
