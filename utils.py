@@ -24,6 +24,31 @@ def create_rectangle(points, img_width=1, img_height=1):
 
     return Rectangle(width / img_width, height / img_height, x_center / img_width, y_center / img_height)
 
+# delete from marmot images that has table but not the label = 'Table' in the xml
+def deleteFalsePositiveFromMarmot():
+    nameToDelete = []
+    for filename in os.listdir("./Dataset/marmot_original/Positive/Labeled"):
+        tree = Et.parse("./Dataset/marmot_original/Positive/Labeled/" + filename)
+        root = tree.getroot()
+        for child in root:
+            found = False
+            for item in child:
+                st = str(item.attrib)
+                if st == "{'Label': 'Table'}":
+                    found = True
+            if not found:
+                print(filename)
+                nameToDelete.append(filename)
+    for f in nameToDelete:
+        os.remove("./Dataset/marmot_original/labels/" + f)
+        f=f.replace('.xml', '.bmp')
+        os.remove("./Dataset/marmot_original/images/" + f)
+
+
+
+
+
+
 
 def create_rectangle_marmot(points, img_width=1, img_height=1):
     # Alternative version of the create_rectangle.
@@ -294,7 +319,10 @@ def calc_min_max_size(img_dir):
 
 if __name__ == '__main__':
     # Convert the icdar dataset.
+    deleteFalsePositiveFromMarmot()
 
+
+    """
     convert_icdar("./Dataset/icdar_2017/Annotations", "./Dataset/icdar_2017/Images", "./Dataset/icdar/")
 
     # Generate test, validation and test sets for icdar.
@@ -334,3 +362,4 @@ if __name__ == '__main__':
     # Input images in '../marmot/images', save the marmot_test.txt in the dataset folder.
     fs.get_test('marmot', '/content/darknet/data/marmot', './Dataset/marmot_test.txt')
     # fs.get_testInPercentage('./Dataset/marmot/images', './Dataset/marmot_test.txt')
+    """
