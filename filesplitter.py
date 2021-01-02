@@ -27,14 +27,14 @@ class FileSplitter:
 
         self.train_set = np.random.random_integers(0, self.dataset_size - 1, size=int(train_size))
         # self.train_set = np.random.random_integers(0, self.dataset_size-1, size=int(train_size))
-        print("train", self.train_set)
+
         # Generate and insert the elements in the test set.
         for i in range(0, test_size):
             rand = np.random.random_integers(0, self.dataset_size - 1)
             while rand in self.train_set:
                 rand = np.random.random_integers(0, self.dataset_size - 1)
             self.test_set.append(rand)
-        print("test", self.test_set)
+
 
         # Generate and insert the elements in the validation set.
         for i in range(0, valid_size):
@@ -42,7 +42,7 @@ class FileSplitter:
             while (rand in self.train_set) or (rand in self.test_set):
                 rand = np.random.random_integers(0, self.dataset_size - 1)
             self.valid_set.append(rand)
-        print("valid", self.valid_set)
+
 
         # all name marmot in a list
         for filename in os.listdir("./Dataset/marmot_original/images"):

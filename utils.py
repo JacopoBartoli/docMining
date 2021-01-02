@@ -44,10 +44,9 @@ def deleteFalsePositiveFromMarmot():
         f=f.replace('.xml', '.bmp')
         os.remove("./Dataset/marmot_original/images/" + f)
 
-
-
-
-
+    #delete one image with problem
+    os.remove("./Dataset/marmot_original/labels/10.1.1.1.2129_6.xml")
+    os.remove("./Dataset/marmot_original/images/10.1.1.1.2129_6.bmp")
 
 
 def create_rectangle_marmot(points, img_width=1, img_height=1):
@@ -319,8 +318,8 @@ def calc_min_max_size(img_dir):
 
 if __name__ == '__main__':
 
-    #deleteFalsePositiveFromMarmot()
-
+    deleteFalsePositiveFromMarmot()
+    """
     # Convert the icdar dataset.
     convert_icdar("./Dataset/icdar_2017/Annotations", "./Dataset/icdar_2017/Images", "./Dataset/icdar/")
 
@@ -348,7 +347,7 @@ if __name__ == '__main__':
     convert_marmot("./Dataset/marmot_original/labels", "./Dataset/marmot_original/images",
                    "./Dataset/marmot")
 
-    fs = FileSplitter(962)
+    fs = FileSplitter(961)
     fs.split()
     # fs.splitInPercentage('marmot')
     # Generate the file that contains the list of the train, validation and test sets.
@@ -361,4 +360,4 @@ if __name__ == '__main__':
     # Input images in '../marmot/images', save the marmot_test.txt in the dataset folder.
     fs.get_test('marmot', '/content/darknet/data/marmot', './Dataset/marmot_test.txt')
     # fs.get_testInPercentage('./Dataset/marmot/images', './Dataset/marmot_test.txt')
-
+"""
