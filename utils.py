@@ -318,11 +318,10 @@ def calc_min_max_size(img_dir):
 
 
 if __name__ == '__main__':
+
+    #deleteFalsePositiveFromMarmot()
+
     # Convert the icdar dataset.
-    deleteFalsePositiveFromMarmot()
-
-
-    """
     convert_icdar("./Dataset/icdar_2017/Annotations", "./Dataset/icdar_2017/Images", "./Dataset/icdar/")
 
     # Generate test, validation and test sets for icdar.
@@ -349,7 +348,7 @@ if __name__ == '__main__':
     convert_marmot("./Dataset/marmot_original/labels", "./Dataset/marmot_original/images",
                    "./Dataset/marmot")
 
-    fs = FileSplitter(993)
+    fs = FileSplitter(962)
     fs.split()
     # fs.splitInPercentage('marmot')
     # Generate the file that contains the list of the train, validation and test sets.
@@ -362,4 +361,4 @@ if __name__ == '__main__':
     # Input images in '../marmot/images', save the marmot_test.txt in the dataset folder.
     fs.get_test('marmot', '/content/darknet/data/marmot', './Dataset/marmot_test.txt')
     # fs.get_testInPercentage('./Dataset/marmot/images', './Dataset/marmot_test.txt')
-    """
+
